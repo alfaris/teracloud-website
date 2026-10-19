@@ -1,7 +1,7 @@
 import { cacheLife, cacheTag } from "next/cache";
-import { offices } from "@/content/offices";
 import { site } from "@/content/site";
-import type { Job } from "@/content/types";
+import type { Job, Office } from "@/content/types";
+import { getOffices } from "@/lib/content";
 
 // Teracloud's UKG Pro Recruiting board. The public search endpoint is what
 // the board UI itself calls; we read it server-side so jobs are in the HTML.
@@ -26,15 +26,15 @@ const slugify = (s: string) =>
     .trim()
     .replace(/[\s_-]+/g, "-");
 
-const officeFor = (city?: string | null) => {
+const officeFor = (offices: Office[], city?: string | null) => {
   if (!city) return undefined;
   const c = city.toLowerCase();
   return offices.find((o) => o.city.toLowerCase() === c || o.slug === slugify(c));
 };
 
-function toJob(o: UkgOpportunity): Job {
+function toJob(o: UkgOpportunity, offices: Office[]): Job {
   const loc = o.Locations[0]?.Address;
-  const office = officeFor(loc?.City);
+  const office = officeFor(offices, loc?.City);
   return {
     id: o.Id,
     slug: `${slugify(o.Title)}-${o.RequisitionNumber.toLowerCase()}`,
@@ -53,6 +53,7 @@ export async function getJobs(): Promise<Job[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("jobs");
+  const offices = await getOffices();
   try {
     const res = await fetch(`${BOARD}/JobBoardView/LoadSearchResults`, {
       method: "POST",
@@ -70,7 +71,7 @@ export async function getJobs(): Promise<Job[]> {
     });
     if (!res.ok) return [];
     const data = (await res.json()) as { opportunities?: UkgOpportunity[] };
-    return (data.opportunities ?? []).map(toJob);
+    return (data.opportunities ?? []).map((o) => toJob(o, offices));
   } catch {
     // Board unreachable: render the page with the "no open roles" state.
     return [];

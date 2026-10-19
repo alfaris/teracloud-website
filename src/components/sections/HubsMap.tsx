@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { offices } from "@/content/offices";
+import { getOffices } from "@/lib/content";
 
 // Equirectangular projection cropped to the longitudes/latitudes our hubs span,
 // with arcs from Copenhagen HQ. Decorative; the list beside it is the content.
@@ -26,7 +26,8 @@ const LABEL: Record<string, { dx: number; dy: number; end?: boolean }> = {
   perth: { dx: -14, dy: 5, end: true },
 };
 
-export function HubsMap() {
+export async function HubsMap() {
+  const offices = await getOffices();
   const hq = project(offices[0].coords);
   return (
     <div className="grid items-center gap-12 lg:grid-cols-12">

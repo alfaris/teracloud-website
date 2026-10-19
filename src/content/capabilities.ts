@@ -1,3 +1,4 @@
+// Fallback content and seed source for Sanity. Read it through src/lib/content.ts.
 import type { Capability } from "./types";
 
 export const capabilities: Capability[] = [
@@ -92,16 +93,3 @@ export const capabilities: Capability[] = [
     work: ["energy-scada", "simulation-platform"],
   },
 ];
-
-export const crossCutting = [
-  {
-    title: "Quality assurance",
-    body: "Automation, performance, scalability, regression, integration, globalization and functional testing — across web, desktop, mobile, server and API.",
-  },
-  {
-    title: "Support & professional services",
-    body: "Technical support at every level, and services that help customers get the full value of their software.",
-  },
-] as const;
-
-export const getCapability = (slug: string) => capabilities.find((c) => c.slug === slug);

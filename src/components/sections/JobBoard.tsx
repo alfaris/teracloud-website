@@ -4,7 +4,7 @@ import { useId, useMemo, useState } from "react";
 import type { Job } from "@/content/types";
 import { JobList } from "./JobList";
 
-export function JobBoard({ jobs }: { jobs: Job[] }) {
+export function JobBoard({ jobs, email }: { jobs: Job[]; email: string }) {
   const id = useId();
   const [loc, setLoc] = useState("all");
   const locations = useMemo(() => [...new Set(jobs.map((j) => j.location))].sort(), [jobs]);
@@ -26,7 +26,7 @@ export function JobBoard({ jobs }: { jobs: Job[] }) {
         </div>
       )}
       <p className="sr-only" role="status">{shown.length} open roles shown</p>
-      <JobList jobs={shown} />
+      <JobList jobs={shown} email={email} />
     </div>
   );
 }

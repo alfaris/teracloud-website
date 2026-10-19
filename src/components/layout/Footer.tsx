@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { capabilities } from "@/content/capabilities";
 import { site } from "@/content/site";
+import { getCapabilities, getOffices, getSiteSettings } from "@/lib/content";
 import { Logo } from "./Logo";
 
 const company = [
@@ -12,22 +12,23 @@ const company = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const [settings, capabilities, offices] = await Promise.all([getSiteSettings(), getCapabilities(), getOffices()]);
   return (
     <footer className="on-dark bg-ink-900 text-white">
       <div className="container-tc grid gap-12 py-16 sm:py-20 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <Logo tone="white" />
-          <p className="mt-6 max-w-sm text-white/65">{site.tagline}</p>
+          <p className="mt-6 max-w-sm text-white/65">{settings.tagline}</p>
           <address className="mt-8 not-italic text-white/65">
             {site.legalName}
             <br />
-            {site.address.street}
+            {settings.address.street}
             <br />
-            {site.address.postalCode} {site.address.city}, {site.address.country}
+            {settings.address.postalCode} {settings.address.city}, {settings.address.country}
             <br />
-            <a className="mt-2 inline-block text-white hover:text-blue-300" href={`mailto:${site.email}`}>
-              {site.email}
+            <a className="mt-2 inline-block text-white hover:text-blue-300" href={`mailto:${settings.email}`}>
+              {settings.email}
             </a>
           </address>
         </div>
@@ -61,7 +62,7 @@ export function Footer() {
             <li><Link className="text-white/80 hover:text-white" href="/privacy">Privacy policy</Link></li>
             <li><Link className="text-white/80 hover:text-white" href="/cookies">Cookies</Link></li>
             <li>
-              <a className="text-white/80 hover:text-white" href={site.whistleblowerUrl} target="_blank" rel="noopener noreferrer">
+              <a className="text-white/80 hover:text-white" href={settings.whistleblowerUrl} target="_blank" rel="noopener noreferrer">
                 Whistleblower hotline <span aria-hidden>↗</span>
                 <span className="sr-only">(opens in a new tab)</span>
               </a>
@@ -72,7 +73,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="container-tc flex flex-col gap-2 py-6 text-sm text-white/50 sm:flex-row sm:justify-between">
           <p>© {site.legalName}</p>
-          <p>Copenhagen · Malmö · Stuttgart · Athens · Yerevan · Cairo · Boston · Perth</p>
+          <p>{offices.map((o) => o.city).join(" · ")}</p>
         </div>
       </div>
     </footer>

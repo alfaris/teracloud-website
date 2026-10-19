@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { capabilities } from "@/content/capabilities";
 import { Reveal } from "@/components/ui/Reveal";
+import { getCapabilities } from "@/lib/content";
 
-export function CapabilityGrid({ headingLevel = "h3" }: { headingLevel?: "h2" | "h3" }) {
+export async function CapabilityGrid({ headingLevel = "h3" }: { headingLevel?: "h2" | "h3" }) {
   const H = headingLevel;
+  const capabilities = await getCapabilities();
   return (
     <ul className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
       {capabilities.map((c, i) => (

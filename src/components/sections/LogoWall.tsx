@@ -1,8 +1,9 @@
 import Image from "next/image";
-import { partners, sisterCompanies } from "@/content/companies";
+import { getCompanies } from "@/lib/content";
 
-export function LogoWall({ label = "Trusted by and working with" }: { label?: string }) {
-  const all = [...sisterCompanies, ...partners];
+export async function LogoWall({ label = "Trusted by and working with" }: { label?: string }) {
+  // Sister companies first, then partners, each in site order.
+  const all = (await getCompanies()).toSorted((a, b) => (a.relation === b.relation ? 0 : a.relation === "sister" ? -1 : 1));
   return (
     <div>
       <p className="t-label text-center text-gray">{label}</p>

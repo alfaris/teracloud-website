@@ -53,3 +53,21 @@ export type Job = {
   summary: string;
   applyUrl: string;
 };
+
+export type TitledText = { title: string; body: string };
+
+// Editable company-wide copy. Identity that code depends on (name, URL, job
+// board) stays in site.ts.
+export type SiteSettings = {
+  email: string;
+  address: { street: string; postalCode: string; city: string; country: string };
+  founded: number;
+  tagline: string;
+  description: string;
+  whistleblowerUrl: string;
+  stats: { value: number; label: string; suffix: string }[];
+  principles: TitledText[];
+  benefits: TitledText[];
+  hiringSteps: TitledText[];
+  crossCutting: TitledText[];
+};

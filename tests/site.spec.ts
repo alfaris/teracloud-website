@@ -53,8 +53,11 @@ test("job page has JobPosting JSON-LD and apply link", async ({ page }) => {
   const first = page.locator("#roles a[href^='/careers/']").first();
   test.skip((await first.count()) === 0, "no open roles");
   await first.click();
-  const ld = await page.locator('script[type="application/ld+json"]').allTextContents();
-  expect(ld.some((t) => t.includes('"JobPosting"'))).toBe(true);
+  // Client-side navigation: wait for it rather than reading the old page.
+  await expect(page).toHaveURL(/\/careers\/[^/]+$/);
+  await expect
+    .poll(async () => (await page.locator('script[type="application/ld+json"]').allTextContents()).some((t) => t.includes('"JobPosting"')))
+    .toBe(true);
   await expect(page.getByRole("link", { name: /Apply/ }).first()).toHaveAttribute("href", /recruiting\.ultipro\.com/);
 });
 
@@ -93,4 +96,25 @@ test("mobile menu opens, traps scroll, closes on Escape", async ({ page, isMobil
   await page.keyboard.press("Escape");
   await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
   await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
+});
+
+test("unknown URLs get the 404 page with site chrome", async ({ page }) => {
+  const res = await page.goto("/no-such-page");
+  expect(res?.status()).toBe(404);
+  await expect(page.locator("h1")).toHaveText(/isn.t in our stack/);
+  await expect(page.locator("footer")).toBeVisible();
+  const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+  expect(results.violations.map((v) => v.id)).toEqual([]);
+});
+
+test("content studio is served at /studio and not indexed", async ({ request }) => {
+  const res = await request.get("/studio");
+  expect(res.status()).toBe(200);
+  expect(await res.text()).toMatch(/<meta name="robots" content="noindex"/);
+});
+
+test("revalidation webhook rejects unsigned requests", async ({ request }) => {
+  const res = await request.post("/api/revalidate", { data: { _type: "office" } });
+  // 500 when SANITY_REVALIDATE_SECRET is unset, 401 when it is set.
+  expect([401, 500]).toContain(res.status());
 });
