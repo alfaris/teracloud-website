@@ -1,84 +1,128 @@
 import Link from "next/link";
+import type { Office } from "@/content/types";
 import { getOffices } from "@/lib/content";
+import { LAND_DOTS, MAP_COLS, MAP_LAT_BOTTOM, MAP_LAT_TOP, MAP_ROWS } from "./world-dots";
 
-// Equirectangular projection cropped to the longitudes/latitudes our hubs span,
-// with arcs from Copenhagen HQ. Decorative; the list beside it is the content.
-const W = 1000;
-const H = 500;
-const LNG_MIN = -85;
-const LNG_MAX = 125;
-const LAT_TOP = 64;
-const LAT_BOTTOM = -40;
+// The brand world map (dot-matrix land, leader-line labels with coordinates)
+// with arcs from HQ, the first office in site order. Decorative; the list
+// beside it is the content.
+const U = 8; // SVG units per dot
+const W = MAP_COLS * U;
+const H = MAP_ROWS * U;
+const PAD_TOP = 80; // room for labels above the northernmost hubs
 const project = ([lat, lng]: [number, number]) => [
-  ((lng - LNG_MIN) / (LNG_MAX - LNG_MIN)) * W,
-  ((LAT_TOP - lat) / (LAT_TOP - LAT_BOTTOM)) * H,
+  ((lng + 180) / 360) * (MAP_COLS - 1) * U + U / 2,
+  ((MAP_LAT_TOP - lat) / (MAP_LAT_TOP - MAP_LAT_BOTTOM)) * (MAP_ROWS - 1) * U + U / 2,
 ];
 
-// Hand-placed labels so the dense European cluster stays legible.
+const CITY = 30; // font sizes and line heights, in SVG units
+const COORD = 20;
+const LINE = 35;
+
+// Where each label sits relative to its hub, in dots, following the printed
+// map. Unknown offices get a label to the right.
 const LABEL: Record<string, { dx: number; dy: number; end?: boolean }> = {
-  copenhagen: { dx: -14, dy: -8, end: true },
-  malmo: { dx: 14, dy: -8 },
-  stuttgart: { dx: -14, dy: 8, end: true },
-  athens: { dx: 10, dy: 20 },
-  yerevan: { dx: 14, dy: 5 },
-  cairo: { dx: 14, dy: 10 },
-  boston: { dx: 14, dy: 5 },
-  perth: { dx: -14, dy: 5, end: true },
+  copenhagen: { dx: -2, dy: -10, end: true },
+  stuttgart: { dx: -9, dy: 2, end: true },
+  athens: { dx: -3, dy: 9, end: true },
+  yerevan: { dx: 8, dy: -5 },
+  cairo: { dx: 7, dy: 4 },
+  boston: { dx: -4, dy: -7, end: true },
+  perth: { dx: -6, dy: 5, end: true },
 };
+const DEFAULT_LABEL = { dx: 6, dy: -4 };
+
+const fmt = ([lat, lng]: [number, number]) =>
+  `${Math.abs(lat).toFixed(1)}° ${lat >= 0 ? "N" : "S"} ${Math.abs(lng).toFixed(1)}° ${lng >= 0 ? "E" : "W"}`;
+
+// Hubs closer than this (in dots) share one label, like Copenhagen and Malmö.
+const MERGE = 1.5;
+
+function labelGroups(offices: Office[]) {
+  const groups: Office[][] = [];
+  for (const o of offices) {
+    const [x, y] = project(o.coords);
+    const near = groups.find((g) => {
+      const [gx, gy] = project(g[0].coords);
+      return Math.hypot(gx - x, gy - y) < MERGE * U;
+    });
+    if (near) near.push(o);
+    else groups.push([o]);
+  }
+  return groups;
+}
 
 export async function HubsMap() {
   const offices = await getOffices();
-  const hq = project(offices[0].coords);
+  const hq = offices[0];
+  const [hx, hy] = project(hq.coords);
   return (
     <div className="grid items-center gap-12 lg:grid-cols-12">
       <div className="relative lg:col-span-8">
-        <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" aria-hidden>
-          <defs>
-            <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1.2" fill="rgb(255 255 255 / 0.12)" />
-            </pattern>
-          </defs>
-          <rect width={W} height={H} fill="url(#dots)" />
-          <g stroke="rgb(255 255 255 / 0.07)" strokeWidth="1">
-            {[-60, -30, 0, 30, 60, 90, 120].map((lng) => {
-              const [x] = project([0, lng]);
-              return <line key={lng} x1={x} x2={x} y1={0} y2={H} />;
-            })}
-            {[60, 30, 0, -30].map((lat) => {
-              const [, y] = project([lat, 0]);
-              return <line key={lat} x1={0} x2={W} y1={y} y2={y} />;
+        <svg viewBox={`0 ${-PAD_TOP} ${W} ${H + PAD_TOP}`} className="h-auto w-full" aria-hidden>
+          <path
+            d={LAND_DOTS}
+            transform={`translate(${U / 2} ${U / 2}) scale(${U})`}
+            fill="none"
+            stroke="rgb(255 255 255 / 0.3)"
+            strokeWidth="0.4"
+            strokeLinecap="round"
+            strokeDasharray="0 1"
+          />
+          <g fill="none" stroke="#8f8ff0" strokeOpacity="0.35" strokeWidth="1.5">
+            {offices.slice(1).map((o) => {
+              const [x, y] = project(o.coords);
+              const mx = (hx + x) / 2;
+              const my = Math.min(hy, y) - Math.abs(x - hx) * 0.25 - 10;
+              return <path key={o.slug} d={`M ${hx} ${hy} Q ${mx} ${my} ${x} ${y}`} />;
             })}
           </g>
-          {offices.slice(1).map((o) => {
+          <circle cx={hx} cy={hy} r="12" fill="none" stroke="#8f8ff0" strokeWidth="1.5">
+            <animate attributeName="r" values="9;20;9" dur="3s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.9;0;0.9" dur="3s" repeatCount="indefinite" />
+          </circle>
+          {offices.map((o) => {
             const [x, y] = project(o.coords);
-            const mx = (hq[0] + x) / 2;
-            const my = Math.min(hq[1], y) - Math.abs(x - hq[0]) * 0.3 + (y > hq[1] ? 40 : -20);
-            return (
-              <path key={o.slug} d={`M ${hq[0]} ${hq[1]} Q ${mx} ${my} ${x} ${y}`} fill="none" stroke="#8f8ff0" strokeOpacity="0.5" strokeWidth="1.2" strokeDasharray="3 5" />
-            );
+            const isHq = o === hq;
+            return <circle key={o.slug} cx={x} cy={y} r={isHq ? 7 : 5} fill={isHq ? "#ffffff" : "#8f8ff0"} />;
           })}
-          {offices.map((o, i) => {
-            const [x, y] = project(o.coords);
-            return (
-              <g key={o.slug}>
-                <circle cx={x} cy={y} r={i === 0 ? 16 : 11} fill="#2a2add" opacity="0.35">
-                  <animate attributeName="r" values={i === 0 ? "12;22;12" : "8;15;8"} dur="3s" begin={`${i * 0.3}s`} repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.45;0;0.45" dur="3s" begin={`${i * 0.3}s`} repeatCount="indefinite" />
-                </circle>
-                <circle cx={x} cy={y} r={i === 0 ? 7 : 5} fill={i === 0 ? "#ffffff" : "#8f8ff0"} />
-                <text
-                  x={x + (LABEL[o.slug]?.dx ?? 12)}
-                  y={y + (LABEL[o.slug]?.dy ?? 4)}
-                  textAnchor={LABEL[o.slug]?.end ? "end" : "start"}
-                  fill="rgb(255 255 255 / 0.8)"
-                  fontSize="17"
-                  fontWeight="600"
-                >
-                  {o.city}
-                </text>
-              </g>
-            );
-          })}
+          {/* Too small to read on phones; the list carries the same content. */}
+          <g className="max-sm:hidden">
+            {labelGroups(offices).map((g) => {
+              const lead = g[0];
+              const isHq = g.includes(hq);
+              const { dx, dy, end } = LABEL[lead.slug] ?? DEFAULT_LABEL;
+              const [x, y] = project(lead.coords);
+              const ax = x + dx * U;
+              const ay = y + dy * U;
+              const lines = g.map((o) => `${o.city}, ${o.country}`);
+              const coords = (isHq ? "Headquarters · " : "") + g.map((o) => fmt(o.coords)).join(" · ");
+              const height = lines.length * LINE + COORD + 4;
+              const top = dy < 0 ? ay - height : ay;
+              const anchor = end ? "end" : "start";
+              return (
+                <g key={lead.slug}>
+                  <line x1={x} y1={y} x2={ax} y2={ay} stroke="#8f8ff0" strokeOpacity="0.7" strokeWidth="1.5" />
+                  <text textAnchor={anchor} fill="rgb(255 255 255 / 0.9)" fontSize={CITY} fontWeight="600">
+                    {lines.map((l, i) => (
+                      <tspan key={l} x={ax} y={top + CITY + i * LINE}>{l}</tspan>
+                    ))}
+                  </text>
+                  <text
+                    x={ax}
+                    y={top + lines.length * LINE + COORD - 2}
+                    textAnchor={anchor}
+                    fill={isHq ? "#8f8ff0" : "rgb(255 255 255 / 0.55)"}
+                    fontSize={COORD}
+                    letterSpacing="0.5"
+                    className="font-mono"
+                  >
+                    {coords}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
         </svg>
       </div>
       <ul className="grid grid-cols-2 gap-x-6 gap-y-5 lg:col-span-4 lg:grid-cols-1">
@@ -86,7 +130,7 @@ export async function HubsMap() {
           <li key={o.slug}>
             <Link href={`/locations/${o.slug}`} className="group block">
               <span className="font-semibold text-white group-hover:text-blue-300">{o.city}</span>
-              <span className="block text-sm text-white/55">{o.country}{o.slug === "copenhagen" ? " · HQ" : ""}</span>
+              <span className="block text-sm text-white/55">{o.country}{o === hq ? " · HQ" : ""}</span>
             </Link>
           </li>
         ))}
