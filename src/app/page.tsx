@@ -1,69 +1,138 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Hero } from "@/components/hero/Hero";
+import { Section } from "@/components/ui/Section";
+import { Button } from "@/components/ui/Button";
+import { Reveal } from "@/components/ui/Reveal";
+import { CapabilityGrid } from "@/components/sections/CapabilityGrid";
+import { WorkCard } from "@/components/sections/WorkCard";
+import { LogoWall } from "@/components/sections/LogoWall";
+import { Stats } from "@/components/sections/Stats";
+import { HubsMap } from "@/components/sections/HubsMap";
+import { CtaBand } from "@/components/sections/CtaBand";
+import { work } from "@/content/work";
+import { principles, benefits } from "@/content/site";
+import { sisterCompanies } from "@/content/companies";
+import { getJobs } from "@/lib/jobs";
 
-export default function Home() {
+export default async function Home() {
+  const jobs = await getJobs();
+  const featured = work.slice(0, 3);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <Hero />
+
+      <section id="proof" className="py-16 sm:py-20">
+        <div className="container-tc space-y-16">
+          <Stats />
+          <LogoWall />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <Section
+        label="Capabilities"
+        title="Deep systems work, end to end."
+        intro="From kernels and compilers to streaming data and energy control — six areas where our teams build, maintain and ship long-lived software."
+        tone="mist"
+      >
+        <CapabilityGrid />
+        <div className="mt-10">
+          <Button href="/capabilities" variant="secondary">All capabilities</Button>
         </div>
-      </main>
-    </div>
+      </Section>
+
+      <Section label="Selected work" title="Software that other products run on.">
+        <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {featured.map((w, i) => (
+            <Reveal as="li" key={w.slug} delay={i * 0.08}>
+              <WorkCard item={w} />
+            </Reveal>
+          ))}
+        </ul>
+        <div className="mt-10">
+          <Button href="/work" variant="secondary">All case studies</Button>
+        </div>
+      </Section>
+
+      <Section
+        label="How we work"
+        title="Engineers first. Method second. Results always."
+        tone="dark"
+      >
+        <ul className="grid gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-2">
+          {principles.map((p, i) => (
+            <Reveal as="li" key={p.title} delay={i * 0.06} className="bg-ink-900 p-8 sm:p-10">
+              <p aria-hidden className="font-mono text-sm text-blue-300">{`{ 0${i + 1} }`}</p>
+              <h3 className="t-h3 mt-5">{p.title}</h3>
+              <p className="mt-3 text-white/70">{p.body}</p>
+            </Reveal>
+          ))}
+        </ul>
+      </Section>
+
+      <Section
+        label="Ecosystem"
+        title="Part of a family of product companies."
+        intro="Our engineers work hand in hand with our sister companies — building the software behind their products every day."
+      >
+        <ul className="grid gap-6 md:grid-cols-3">
+          {sisterCompanies.map((c, i) => (
+            <Reveal as="li" key={c.name} delay={i * 0.06}>
+              <div className="brace-frame flex h-full flex-col rounded-2xl bg-mist p-8">
+                <h3 className="t-h3">{c.name}</h3>
+                <p className="mt-3 flex-1 text-gray">{c.description}</p>
+                <a href={c.url} target="_blank" rel="noopener noreferrer" className="mt-6 font-semibold text-blue hover:text-blue-700">
+                  Visit {c.name} <span aria-hidden>↗</span>
+                  <span className="sr-only">(opens in a new tab)</span>
+                </a>
+              </div>
+            </Reveal>
+          ))}
+        </ul>
+        <div className="mt-10">
+          <Button href="/ecosystem" variant="secondary">Explore the ecosystem</Button>
+        </div>
+      </Section>
+
+      <Section
+        label="Global hubs"
+        title="Eight hubs. One engineering culture."
+        intro="Teams in Europe, the US, MENA and Australia — close to our partners and to the talent we hire."
+        tone="dark"
+      >
+        <HubsMap />
+      </Section>
+
+      <Section label="Careers" title="Hard problems, good people, real growth.">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <ul className="grid gap-8 sm:grid-cols-2 lg:col-span-7">
+            {benefits.map((b) => (
+              <li key={b.title}>
+                <h3 className="t-h3">{b.title}</h3>
+                <p className="mt-2 text-gray">{b.body}</p>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-col justify-between rounded-2xl bg-ink-900 p-8 text-white on-dark lg:col-span-5">
+            <div>
+              <p className="t-label text-blue-300">Open roles</p>
+              <p className="mt-4 text-7xl font-extrabold tracking-tight">{jobs.length}</p>
+              <ul className="mt-6 space-y-2 text-white/75">
+                {jobs.slice(0, 3).map((j) => (
+                  <li key={j.id}>
+                    <Link href={`/careers/${j.slug}`} className="hover:text-white">
+                      {j.title} — {j.location}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Button href="/careers" variant="light" className="mt-10 self-start">Join the team</Button>
+          </div>
+        </div>
+      </Section>
+
+      <CtaBand />
+    </>
   );
 }
