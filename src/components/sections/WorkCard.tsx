@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { CaseCover } from "./CaseCover";
-import { getCapability } from "@/content/capabilities";
 import type { CaseStudy } from "@/content/types";
+import { getCapability } from "@/lib/content";
 
-export function WorkCard({ item, headingLevel = "h3" }: { item: CaseStudy; headingLevel?: "h2" | "h3" }) {
+export async function WorkCard({ item, headingLevel = "h3" }: { item: CaseStudy; headingLevel?: "h2" | "h3" }) {
   const H = headingLevel;
+  const capability = await getCapability(item.capability);
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition-shadow duration-300 hover:shadow-[0_20px_60px_-20px_rgb(42_42_221/0.35)]">
       <div className="aspect-[20/13] overflow-hidden bg-ink-900">
@@ -15,7 +16,7 @@ export function WorkCard({ item, headingLevel = "h3" }: { item: CaseStudy; headi
         />
       </div>
       <div className="flex flex-1 flex-col p-6">
-        <p className="t-label text-blue">{getCapability(item.capability)?.title}</p>
+        <p className="t-label text-blue">{capability?.title}</p>
         <H className="t-h3 mt-3 text-balance">
           <Link href={`/work/${item.slug}`} className="after:absolute after:inset-0">
             {item.title}

@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/ui/Section";
 import { HubsMap } from "@/components/sections/HubsMap";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { offices } from "@/content/offices";
+import { getOffices } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -12,7 +12,8 @@ export const metadata = pageMetadata({
   path: "/locations",
 });
 
-export default function LocationsPage() {
+export default async function LocationsPage() {
+  const offices = await getOffices();
   return (
     <>
       <PageHeader label="Locations" title="Eight hubs, one engineering culture." intro="Headquartered in Copenhagen, with teams across Europe, the US, MENA and Australia." />

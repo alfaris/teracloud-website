@@ -64,3 +64,35 @@ export type Job = {
   summary: string;
   applyUrl: string;
 };
+
+export type TitledText = { title: string; body: string };
+
+// Company-wide copy (src/content/site.ts → siteSettings). Identity that code
+// depends on (name, URL, job board) is the separate `site` object there.
+export type SiteSettings = {
+  email: string;
+  address: { street: string; postalCode: string; city: string; country: string };
+  founded: number;
+  tagline: string;
+  description: string;
+  whistleblowerUrl: string;
+  stats: { value: number; label: string; suffix: string }[];
+  principles: TitledText[];
+  benefits: TitledText[];
+  hiringSteps: TitledText[];
+  crossCutting: TitledText[];
+};
+
+export const NEWS_TOPICS = ["company", "engineering", "culture", "hiring"] as const;
+
+// A post on Teracloud's LinkedIn page (or elsewhere), summarized on the site
+// and linked out to.
+export type NewsPost = {
+  id: string;
+  title: string;
+  date: string; // YYYY-MM-DD
+  summary: string;
+  url: string;
+  topics: (typeof NEWS_TOPICS)[number][];
+  image?: { src: string; alt: string; width: number; height: number };
+};

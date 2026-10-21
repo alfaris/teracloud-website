@@ -4,17 +4,16 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/ui/Section";
 import { JobList } from "@/components/sections/JobList";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { offices, getOffice } from "@/content/offices";
-import { site } from "@/content/site";
+import { getOffice, getOffices, getSiteSettings } from "@/lib/content";
 import { getJobs } from "@/lib/jobs";
 import { pageMetadata } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return offices.map((o) => ({ slug: o.slug }));
+export async function generateStaticParams() {
+  return (await getOffices()).map((o) => ({ slug: o.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/locations/[slug]">): Promise<Metadata> {
-  const o = getOffice((await params).slug);
+  const o = await getOffice((await params).slug);
   if (!o) return {};
   return pageMetadata({
     title: `${o.city}, ${o.country}`,
@@ -28,9 +27,10 @@ export async function generateMetadata({ params }: PageProps<"/locations/[slug]"
 export const instant = false;
 
 export default async function OfficePage({ params }: PageProps<"/locations/[slug]">) {
-  const o = getOffice((await params).slug);
+  const o = await getOffice((await params).slug);
   if (!o) notFound();
-  const jobs = (await getJobs()).filter((j) => j.officeSlug === o.slug);
+  const [allJobs, { email }] = await Promise.all([getJobs(), getSiteSettings()]);
+  const jobs = allJobs.filter((j) => j.officeSlug === o.slug);
   return (
     <>
       <PageHeader
@@ -52,12 +52,12 @@ export default async function OfficePage({ params }: PageProps<"/locations/[slug
             <address className="mt-3 not-italic text-gray">
               {o.address ?? `${o.city}, ${o.country}`}
               <br />
-              <a href={`mailto:${site.email}`} className="text-blue hover:underline">{site.email}</a>
+              <a href={`mailto:${email}`} className="text-blue hover:underline">{email}</a>
             </address>
           </div>
           <div className="lg:col-span-7">
             <h2 className="t-h2">Open roles in {o.city}</h2>
-            <div className="mt-6"><JobList jobs={jobs} emptyCity={o.city} /></div>
+            <div className="mt-6"><JobList jobs={jobs} email={email} emptyCity={o.city} /></div>
           </div>
         </div>
       </Section>

@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/ui/Section";
 import { CapabilityGrid } from "@/components/sections/CapabilityGrid";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { crossCutting } from "@/content/capabilities";
+import { getSiteSettings } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -11,7 +11,8 @@ export const metadata = pageMetadata({
   path: "/capabilities",
 });
 
-export default function CapabilitiesPage() {
+export default async function CapabilitiesPage() {
+  const { crossCutting } = await getSiteSettings();
   return (
     <>
       <PageHeader

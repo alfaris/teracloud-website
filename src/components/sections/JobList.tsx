@@ -4,7 +4,7 @@ import { site } from "@/content/site";
 
 const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
-export function JobList({ jobs, emptyCity }: { jobs: Job[]; emptyCity?: string }) {
+export function JobList({ jobs, email, emptyCity }: { jobs: Job[]; email: string; emptyCity?: string }) {
   if (jobs.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-line p-8 text-center">
@@ -14,7 +14,7 @@ export function JobList({ jobs, emptyCity }: { jobs: Job[]; emptyCity?: string }
           <a className="text-blue underline underline-offset-4" href={site.jobBoardUrl} target="_blank" rel="noopener noreferrer">
             full job board<span className="sr-only"> (opens in a new tab)</span>
           </a>{" "}
-          or send an open application to <a className="text-blue underline underline-offset-4" href={`mailto:${site.email}`}>{site.email}</a>.
+          or send an open application to <a className="text-blue underline underline-offset-4" href={`mailto:${email}`}>{email}</a>.
         </p>
       </div>
     );

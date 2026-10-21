@@ -3,7 +3,7 @@ import { Section } from "@/components/ui/Section";
 import { Reveal } from "@/components/ui/Reveal";
 import { WorkCard } from "@/components/sections/WorkCard";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { work } from "@/content/work";
+import { getCaseStudies } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -12,7 +12,8 @@ export const metadata = pageMetadata({
   path: "/work",
 });
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const work = await getCaseStudies();
   return (
     <>
       <PageHeader

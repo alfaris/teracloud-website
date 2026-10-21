@@ -1,3 +1,5 @@
+// Site content: edit it here (see README → Editing content). Pages read it
+// through src/lib/content.ts.
 import type { Company } from "./types";
 
 // Logos for partners are taken from the current site (public/logos).

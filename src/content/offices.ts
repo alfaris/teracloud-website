@@ -1,3 +1,5 @@
+// Site content: edit it here (see README → Editing content). Pages read it
+// through src/lib/content.ts.
 import type { Office } from "./types";
 
 // Street addresses outside Copenhagen are pending confirmation.
@@ -68,5 +70,3 @@ export const offices: Office[] = [
     coords: [-31.95, 115.86],
   },
 ];
-
-export const getOffice = (slug: string) => offices.find((o) => o.slug === slug);

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { site } from "@/content/site";
+import type { SiteSettings } from "@/content/types";
 
 export function pageMetadata({
   title,
@@ -28,21 +29,21 @@ export function JsonLd({ data }: { data: Record<string, unknown> }) {
   );
 }
 
-export const organizationLd = {
+export const organizationLd = (settings: SiteSettings) => ({
   "@context": "https://schema.org",
   "@type": "Organization",
   name: site.legalName,
   alternateName: site.name,
   url: site.url,
   logo: `${site.url}/brand/Teracloud_logomark_blue.svg`,
-  email: site.email,
-  foundingDate: String(site.founded),
-  description: site.description,
+  email: settings.email,
+  foundingDate: String(settings.founded),
+  description: settings.description,
   address: {
     "@type": "PostalAddress",
-    streetAddress: site.address.street,
-    postalCode: site.address.postalCode,
+    streetAddress: settings.address.street,
+    postalCode: settings.address.postalCode,
     addressLocality: "Copenhagen",
     addressCountry: "DK",
   },
-};
+});

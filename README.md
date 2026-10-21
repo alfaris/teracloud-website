@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# teracloud.com
 
-## Getting Started
+The Teracloud ApS website. Next.js 16 (App Router, Cache Components, Partial
+Prefetching) and Tailwind 4. All content lives in this repository; there is no
+CMS or other outside service.
 
-First, run the development server:
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script | What it does |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm run build` / `npm start` | Production build and server |
+| `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
+| `npm test` | Playwright + axe against a production server on port 3020 (run `npm run build` first) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The contact form sends mail through Resend. Copy `.env.example` to
+`.env.local` and set `RESEND_API_KEY` to try it; without it the form logs to the
+console in development.
 
-## Learn More
+## Editing content
 
-To learn more about Next.js, take a look at the following resources:
+Every page reads its content from the files in `src/content`, through
+`src/lib/content.ts`. To change something, edit the file, check it with
+`npm run dev`, and deploy. On GitHub this works in the browser too: open the
+file, click the pencil, edit, and commit. If a field is missing or misspelled,
+`npm run typecheck` and the build fail and name the file and line.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| What | File |
+| --- | --- |
+| Capabilities (the six service areas) | `src/content/capabilities.ts` |
+| Case studies (Work) | `src/content/work.ts` |
+| Offices / hubs, including map position | `src/content/offices.ts` |
+| Sister companies and partners | `src/content/companies.ts` |
+| News (LinkedIn posts) | `src/content/news.ts` |
+| Tagline, address, email, stats, principles, benefits, hiring steps | `src/content/site.ts` → `siteSettings` |
+| Site name, URL, job board, main navigation | `src/content/site.ts` → `site`, `nav` |
+| Privacy policy | `src/content/legal/privacy.html` |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Job listings are not in the repo: they come live from the UKG Pro job board
+(`src/lib/jobs.ts`) and refresh hourly.
 
-## Deploy on Vercel
+Things to know:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Order** in each file is the order on the site. The first office is drawn as
+  headquarters on the map.
+- **Links between items use slugs.** A capability lists its offices and case
+  studies by `slug`, and a case study names its `capability` by slug. Changing
+  a slug changes that page's URL, so update anything that points at it.
+- **Company logos** go in `public/logos`; the entry holds the path, e.g.
+  `/logos/ibm.png`.
+- **Case study artwork** is generated from the `art` number; give each case
+  study a different one.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Adding a LinkedIn post
+
+LinkedIn has no feed the site can read without an approved developer app, so
+posts are added by hand (about a minute each):
+
+1. On LinkedIn, open the post's **…** menu → **Copy link to post**.
+2. In `src/content/news.ts`, add an entry to the `news` list with that link, a
+   short title, the date, a one or two sentence summary and its topics. The
+   comment at the top of the file shows a complete example.
+3. For a photo, add the file to `public/news/` and fill in `image` with its
+   path, a description (`alt`) and its pixel size.
+
+The three newest posts appear on the home page, and the three newest tagged
+`culture` or `hiring` on Careers. Both sections stay hidden while there are no
+posts.

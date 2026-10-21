@@ -1,3 +1,5 @@
+// Site content: edit it here (see README → Editing content). Pages read it
+// through src/lib/content.ts.
 import type { CaseStudy } from "./types";
 
 // Client names are anonymized pending NDA review. Outcomes are qualitative
@@ -136,5 +138,3 @@ export const work: CaseStudy[] = [
     art: 7,
   },
 ];
-
-export const getWork = (slug: string) => work.find((w) => w.slug === slug);

@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
-import { getOffice } from "@/content/offices";
 import { site } from "@/content/site";
+import { getOffice } from "@/lib/content";
 import { getJob, getJobs } from "@/lib/jobs";
 import { JsonLd, pageMetadata } from "@/lib/seo";
 
@@ -28,7 +28,7 @@ export const instant = false;
 export default async function JobPage({ params }: PageProps<"/careers/[slug]">) {
   const j = await getJob((await params).slug);
   if (!j) notFound();
-  const office = getOffice(j.officeSlug);
+  const office = await getOffice(j.officeSlug);
   const [city, country] = j.location.split(", ");
   return (
     <>

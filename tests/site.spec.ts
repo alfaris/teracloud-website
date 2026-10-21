@@ -53,8 +53,11 @@ test("job page has JobPosting JSON-LD and apply link", async ({ page }) => {
   const first = page.locator("#roles a[href^='/careers/']").first();
   test.skip((await first.count()) === 0, "no open roles");
   await first.click();
-  const ld = await page.locator('script[type="application/ld+json"]').allTextContents();
-  expect(ld.some((t) => t.includes('"JobPosting"'))).toBe(true);
+  // Client-side navigation: wait for it rather than reading the old page.
+  await expect(page).toHaveURL(/\/careers\/[^/]+$/);
+  await expect
+    .poll(async () => (await page.locator('script[type="application/ld+json"]').allTextContents()).some((t) => t.includes('"JobPosting"')))
+    .toBe(true);
   await expect(page.getByRole("link", { name: /Apply/ }).first()).toHaveAttribute("href", /recruiting\.ultipro\.com/);
 });
 
@@ -110,4 +113,26 @@ test("mobile menu opens, traps scroll, closes on Escape", async ({ page, isMobil
   await page.keyboard.press("Escape");
   await expect(page.getByRole("navigation", { name: "Mobile" })).toBeHidden();
   await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
+});
+
+test("unknown URLs get the 404 page with site chrome", async ({ page }) => {
+  const res = await page.goto("/no-such-page");
+  expect(res?.status()).toBe(404);
+  await expect(page.locator("h1")).toHaveText(/isn.t in our stack/);
+  await expect(page.locator("footer")).toBeVisible();
+  const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+  expect(results.violations.map((v) => v.id)).toEqual([]);
+});
+
+test("news cards link out to the original posts", async ({ page }) => {
+  await page.goto("/");
+  const section = page.locator("section", { has: page.getByRole("heading", { name: "Latest from Teracloud." }) });
+  // The section is left out while src/content/news.ts has no posts.
+  test.skip((await section.count()) === 0, "no news posts");
+  const links = section.getByRole("link");
+  expect(await links.count()).toBeLessThanOrEqual(3);
+  for (const link of await links.all()) {
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", /noopener/);
+  }
 });

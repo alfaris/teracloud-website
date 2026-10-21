@@ -7,17 +7,15 @@ import { ChipList } from "@/components/ui/Chip";
 import { CaseCover } from "@/components/sections/CaseCover";
 import { WorkCard } from "@/components/sections/WorkCard";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { getCapability } from "@/content/capabilities";
-import { getOffice } from "@/content/offices";
-import { work, getWork } from "@/content/work";
+import { getCapability, getCaseStudies, getCaseStudy, getOffices } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return work.map((w) => ({ slug: w.slug }));
+export async function generateStaticParams() {
+  return (await getCaseStudies()).map((w) => ({ slug: w.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/work/[slug]">): Promise<Metadata> {
-  const w = getWork((await params).slug);
+  const w = await getCaseStudy((await params).slug);
   if (!w) return {};
   return pageMetadata({ title: w.title, description: w.summary, path: `/work/${w.slug}` });
 }
@@ -27,9 +25,9 @@ export async function generateMetadata({ params }: PageProps<"/work/[slug]">): P
 export const instant = false;
 
 export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]">) {
-  const w = getWork((await params).slug);
+  const w = await getCaseStudy((await params).slug);
   if (!w) notFound();
-  const cap = getCapability(w.capability);
+  const [cap, work, offices] = await Promise.all([getCapability(w.capability), getCaseStudies(), getOffices()]);
   const more = work.filter((x) => x.slug !== w.slug && x.capability === w.capability).slice(0, 3);
   return (
     <>
@@ -57,7 +55,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
               )}
               <div>
                 <dt className="t-label text-gray">Teams</dt>
-                <dd className="mt-1 font-semibold">{w.offices.map((o) => getOffice(o)?.city).filter(Boolean).join(", ")}</dd>
+                <dd className="mt-1 font-semibold">{w.offices.map((s) => offices.find((o) => o.slug === s)?.city).filter(Boolean).join(", ")}</dd>
               </div>
               <div>
                 <dt className="t-label mb-3 text-gray">Stack</dt>

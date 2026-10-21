@@ -3,7 +3,7 @@ import { Section } from "@/components/ui/Section";
 import { Reveal } from "@/components/ui/Reveal";
 import { Stats } from "@/components/sections/Stats";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { principles } from "@/content/site";
+import { getSiteSettings } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -18,7 +18,8 @@ const timeline = [
   { year: "Today", text: "200+ people across Copenhagen, Malmö, Stuttgart, Athens, Yerevan, Cairo, Boston and Perth, working on a dozen active projects." },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { principles } = await getSiteSettings();
   return (
     <>
       <PageHeader

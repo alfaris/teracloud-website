@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/ui/Section";
 import { Reveal } from "@/components/ui/Reveal";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { partners, sisterCompanies } from "@/content/companies";
+import { getPartners, getSisterCompanies } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -12,7 +12,8 @@ export const metadata = pageMetadata({
   path: "/ecosystem",
 });
 
-export default function EcosystemPage() {
+export default async function EcosystemPage() {
+  const [sisterCompanies, partners] = await Promise.all([getSisterCompanies(), getPartners()]);
   return (
     <>
       <PageHeader

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { CapabilityIcon } from "@/components/ui/CapabilityIcon";
-import { capabilities } from "@/content/capabilities";
+import { getCapabilities } from "@/lib/content";
 
 // The six capability areas as linked cards. `detailed` (the /capabilities
 // index) also lists what each area builds.
-export function CapabilityGrid({ headingLevel = "h3", detailed = false }: { headingLevel?: "h2" | "h3"; detailed?: boolean }) {
+export async function CapabilityGrid({ headingLevel = "h3", detailed = false }: { headingLevel?: "h2" | "h3"; detailed?: boolean }) {
   const H = headingLevel;
+  const capabilities = await getCapabilities();
   return (
     <ul className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
       {capabilities.map((c, i) => (
