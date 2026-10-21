@@ -24,8 +24,8 @@ entirely from the typed files in `src/content`.
 
 ## Content (Sanity)
 
-Capabilities, case studies, offices, sister companies and partners, and the
-company-wide copy (tagline, address, stats, principles, benefits, hiring steps)
+Capabilities, case studies, offices, sister companies and partners, news
+posts, and the company-wide copy (tagline, address, stats, principles, benefits, hiring steps)
 are edited in Sanity Studio at **`/studio`**. Job listings are not: they come
 from the UKG Pro job board (`src/lib/jobs.ts`).
 
@@ -33,7 +33,7 @@ How it fits together:
 
 - `src/lib/content.ts` is the only way pages read content. Each function is a
   `'use cache'` function tagged with its Sanity document type (`capability`,
-  `caseStudy`, `office`, `company`, `siteSettings`).
+  `caseStudy`, `office`, `company`, `newsPost`, `siteSettings`).
 - If `SANITY_PROJECT_ID` is **unset**, those functions return the files in
   `src/content` instead. Those files are also what the seed script imports.
 - When an editor publishes, a Sanity webhook calls `/api/revalidate`, which
@@ -80,7 +80,7 @@ project ID and dataset in the browser, so they are baked in at build time:
    - URL: `https://teracloud.com/api/revalidate`
    - Dataset: `production`
    - Trigger on: Create, Update, Delete
-   - Filter: `_type in ["capability", "caseStudy", "office", "company", "siteSettings"]`
+   - Filter: `_type in ["capability", "caseStudy", "office", "company", "newsPost", "siteSettings"]`
    - Projection: `{_type}`
    - HTTP method: POST, API version: `v2025-10-01`
    - Secret: a long random string, also set as `SANITY_REVALIDATE_SECRET` in
@@ -92,6 +92,13 @@ To go back to the local files, unset `SANITY_PROJECT_ID` and rebuild.
 
 ### Notes for editors
 
+- **News** shows LinkedIn activity on the site. LinkedIn has no feed the site
+  can read without an approved developer app, so each post is added by hand:
+  on LinkedIn, open the post's **…** menu → **Copy link to post**, then in the
+  Studio create a News post with that link, a short title, the date, a one or
+  two sentence summary and its topics. The three newest appear on the home
+  page; the three newest tagged Culture or Hiring also appear on Careers.
+  Each section is hidden while it has no posts.
 - **Order** sets an item's position in lists on the site, lowest first. The
   first office in order is drawn as headquarters on the map.
 - **Company logos** are files in `public/logos`. A new logo needs a developer

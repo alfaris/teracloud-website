@@ -48,6 +48,23 @@ export const companiesQuery = /* groq */ `
   relation
 }`;
 
+// Newest first; the site never shows more than a page of them.
+export const newsQuery = /* groq */ `
+*[_type == "newsPost" && defined(url)] | order(date desc)[0...24] {
+  "id": _id,
+  title,
+  date,
+  summary,
+  url,
+  "topics": coalesce(topics, []),
+  "image": select(defined(image.asset) => {
+    "src": image.asset->url,
+    "alt": coalesce(image.alt, ""),
+    "width": image.asset->metadata.dimensions.width,
+    "height": image.asset->metadata.dimensions.height
+  })
+}`;
+
 export const siteSettingsQuery = /* groq */ `
 *[_id == "siteSettings"][0] {
   email,

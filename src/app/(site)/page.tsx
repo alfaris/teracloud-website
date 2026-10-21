@@ -9,15 +9,17 @@ import { LogoWall } from "@/components/sections/LogoWall";
 import { Stats } from "@/components/sections/Stats";
 import { HubsMap } from "@/components/sections/HubsMap";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { getCaseStudies, getSiteSettings, getSisterCompanies } from "@/lib/content";
+import { NewsCards } from "@/components/sections/NewsCards";
+import { getCaseStudies, getLatestNews, getSiteSettings, getSisterCompanies } from "@/lib/content";
 import { getJobs } from "@/lib/jobs";
 
 export default async function Home() {
-  const [jobs, work, { principles, benefits }, sisterCompanies] = await Promise.all([
+  const [jobs, work, { principles, benefits }, sisterCompanies, news] = await Promise.all([
     getJobs(),
     getCaseStudies(),
     getSiteSettings(),
     getSisterCompanies(),
+    getLatestNews(3),
   ]);
   const featured = work.slice(0, 3);
 
@@ -134,6 +136,12 @@ export default async function Home() {
           </div>
         </div>
       </Section>
+
+      {news.length > 0 && (
+        <Section tone="mist" label="News" title="Latest from Teracloud.">
+          <NewsCards posts={news} />
+        </Section>
+      )}
 
       <CtaBand />
     </>

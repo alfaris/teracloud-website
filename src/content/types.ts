@@ -71,3 +71,17 @@ export type SiteSettings = {
   hiringSteps: TitledText[];
   crossCutting: TitledText[];
 };
+
+export const NEWS_TOPICS = ["company", "engineering", "culture", "hiring"] as const;
+
+// A post on Teracloud's LinkedIn page (or elsewhere), summarized on the site
+// and linked out to.
+export type NewsPost = {
+  id: string;
+  title: string;
+  date: string; // YYYY-MM-DD
+  summary: string;
+  url: string;
+  topics: (typeof NEWS_TOPICS)[number][];
+  image?: { src: string; alt: string; width: number; height: number };
+};

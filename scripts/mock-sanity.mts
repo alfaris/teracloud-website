@@ -1,5 +1,6 @@
-// A stand-in for the Sanity query API, serving the seed documents, so the
-// Sanity code path can be built and tested without a real project:
+// A stand-in for the Sanity query API, serving the seed documents plus the
+// test fixtures in lib/mock-fixtures.mts, so the Sanity code path can be
+// built and tested without a real project:
 //
 //   npm run sanity:mock &
 //   SANITY_PROJECT_ID=mock SANITY_API_HOST=http://127.0.0.1:4545 npm run build
@@ -10,9 +11,10 @@
 import { createServer } from "node:http";
 import { evaluate, parse } from "groq-js";
 import { docs } from "./lib/seed-docs.mts";
+import { fixtures } from "./lib/mock-fixtures.mts";
 
 const port = Number(process.env.PORT ?? 4545);
-const dataset: Record<string, unknown>[] = structuredClone(docs);
+const dataset: Record<string, unknown>[] = structuredClone([...docs, ...fixtures]);
 
 async function body(req: import("node:http").IncomingMessage) {
   let raw = "";

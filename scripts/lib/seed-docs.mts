@@ -2,6 +2,7 @@
 // Shared by the seed script and the local mock API.
 import { capabilities } from "../../src/content/capabilities.ts";
 import { partners, sisterCompanies } from "../../src/content/companies.ts";
+import { news } from "../../src/content/news.ts";
 import { offices } from "../../src/content/offices.ts";
 import { siteSettings } from "../../src/content/site.ts";
 import { work } from "../../src/content/work.ts";
@@ -66,6 +67,16 @@ export const docs: Doc[] = [
     url: c.url,
     logo: c.logo,
     ...(c.description ? { description: c.description } : {}),
+  })),
+  // Local news has no images; add those in the Studio.
+  ...news.map((p) => ({
+    _id: `newsPost-${p.id}`,
+    _type: "newsPost",
+    url: p.url,
+    title: p.title,
+    date: p.date,
+    summary: p.summary,
+    topics: p.topics,
   })),
   {
     _id: "siteSettings",

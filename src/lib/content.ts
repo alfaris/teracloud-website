@@ -1,13 +1,14 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { capabilities as localCapabilities } from "@/content/capabilities";
 import { sisterCompanies, partners } from "@/content/companies";
+import { news as localNews } from "@/content/news";
 import { offices as localOffices } from "@/content/offices";
 import { siteSettings as localSiteSettings } from "@/content/site";
 import { work as localWork } from "@/content/work";
-import type { Capability, CaseStudy, Company, Office, SiteSettings } from "@/content/types";
+import type { Capability, CaseStudy, Company, NewsPost, Office, SiteSettings } from "@/content/types";
 import { sanityFetch } from "@/sanity/client";
 import { isSanityConfigured } from "@/sanity/env";
-import { capabilitiesQuery, caseStudiesQuery, companiesQuery, officesQuery, siteSettingsQuery } from "@/sanity/queries";
+import { capabilitiesQuery, caseStudiesQuery, companiesQuery, newsQuery, officesQuery, siteSettingsQuery } from "@/sanity/queries";
 
 // Every read of editable content goes through here. With SANITY_PROJECT_ID set
 // it comes from Sanity; otherwise from the typed files in src/content. Each
@@ -53,6 +54,15 @@ export async function getCompanies(): Promise<Company[]> {
   return sanityFetch<Company[]>(companiesQuery);
 }
 
+export async function getNews(): Promise<NewsPost[]> {
+  "use cache";
+  cacheTag("newsPost");
+  cacheLife("content");
+  if (!isSanityConfigured) return localNews;
+  const rows = await sanityFetch<(Omit<NewsPost, "image"> & { image: NewsPost["image"] | null })[]>(newsQuery);
+  return rows.map(({ image, ...p }) => (image ? { ...p, image } : p));
+}
+
 export async function getSiteSettings(): Promise<SiteSettings> {
   "use cache";
   cacheTag("siteSettings");
@@ -70,4 +80,6 @@ export const getCapability = async (slug: string) => (await getCapabilities()).f
 export const getCaseStudy = async (slug: string) => (await getCaseStudies()).find((w) => w.slug === slug);
 export const getOffice = async (slug: string) => (await getOffices()).find((o) => o.slug === slug);
 export const getSisterCompanies = async () => (await getCompanies()).filter((c) => c.relation === "sister");
+export const getLatestNews = async (count: number, topics?: NewsPost["topics"]) =>
+  (await getNews()).filter((p) => !topics || p.topics.some((t) => topics.includes(t))).slice(0, count);
 export const getPartners = async () => (await getCompanies()).filter((c) => c.relation === "partner");

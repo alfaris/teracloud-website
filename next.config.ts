@@ -25,7 +25,11 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  images: { formats: ["image/avif", "image/webp"] },
+  images: {
+    formats: ["image/avif", "image/webp"],
+    // News images uploaded in Sanity Studio.
+    remotePatterns: [new URL("https://cdn.sanity.io/images/**")],
+  },
   async redirects() {
     return [
       { source: "/projects", destination: "/work", permanent: true },

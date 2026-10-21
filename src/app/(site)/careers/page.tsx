@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { JobBoard } from "@/components/sections/JobBoard";
 import { HubsMap } from "@/components/sections/HubsMap";
+import { NewsCards } from "@/components/sections/NewsCards";
 import { site } from "@/content/site";
-import { getSiteSettings } from "@/lib/content";
+import { getLatestNews, getSiteSettings } from "@/lib/content";
 import { getJobs } from "@/lib/jobs";
 import { pageMetadata } from "@/lib/seo";
 
@@ -16,7 +17,11 @@ export const metadata = pageMetadata({
 });
 
 export default async function CareersPage() {
-  const [jobs, { benefits, hiringSteps, email }] = await Promise.all([getJobs(), getSiteSettings()]);
+  const [jobs, { benefits, hiringSteps, email }, news] = await Promise.all([
+    getJobs(),
+    getSiteSettings(),
+    getLatestNews(3, ["culture", "hiring"]),
+  ]);
   return (
     <>
       <PageHeader
@@ -58,6 +63,12 @@ export default async function CareersPage() {
           ))}
         </ol>
       </Section>
+
+      {news.length > 0 && (
+        <Section tone="mist" label="Life at Teracloud" title="From our teams.">
+          <NewsCards posts={news} />
+        </Section>
+      )}
 
       <Section tone="dark" label="Where you could work" title="Eight hubs to choose from.">
         <HubsMap />
