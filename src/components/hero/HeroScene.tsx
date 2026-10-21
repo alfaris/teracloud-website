@@ -35,7 +35,7 @@ function useBraceGeometries() {
     const out = {} as Record<BraceKey, THREE.ExtrudeGeometry>;
     (Object.keys(LOGOMARK_PATHS) as BraceKey[]).forEach((key) => {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg"><path d="${LOGOMARK_PATHS[key]}"/></svg>`;
-      const shapes = loader.parse(svg).paths.flatMap((p) => SVGLoader.createShapes(p));
+      const shapes = loader.parse(svg).paths.flatMap((p) => p.toShapes());
       const geo = new THREE.ExtrudeGeometry(shapes, {
         depth: 34,
         bevelEnabled: true,
