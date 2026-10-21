@@ -42,8 +42,9 @@ export default async function CapabilityPage({ params }: PageProps<"/capabilitie
         <ul className="grid gap-6 md:grid-cols-3">
           {c.builds.map((b, i) => (
             <Reveal as="li" key={b.title} delay={i * 0.06}>
-              <div className="brace-frame h-full rounded-2xl bg-mist p-8">
-                <h3 className="t-h3">{b.title}</h3>
+              <div className="h-full rounded-2xl bg-mist p-8">
+                <span className="font-mono text-[0.8125rem] text-blue" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="t-h3 mt-6">{b.title}</h3>
                 <p className="mt-3 text-gray">{b.body}</p>
               </div>
             </Reveal>

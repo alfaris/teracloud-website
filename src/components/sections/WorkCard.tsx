@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CaseArt } from "./CaseArt";
+import { CaseCover } from "./CaseCover";
 import { getCapability } from "@/content/capabilities";
 import type { CaseStudy } from "@/content/types";
 
@@ -8,7 +8,11 @@ export function WorkCard({ item, headingLevel = "h3" }: { item: CaseStudy; headi
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white transition-shadow duration-300 hover:shadow-[0_20px_60px_-20px_rgb(42_42_221/0.35)]">
       <div className="aspect-[20/13] overflow-hidden bg-ink-900">
-        <CaseArt seed={item.art} className="h-full w-full transition-transform duration-700 ease-out-quint group-hover:scale-105" />
+        <CaseCover
+          item={item}
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+          className="transition-transform duration-700 ease-out-quint group-hover:scale-105"
+        />
       </div>
       <div className="flex flex-1 flex-col p-6">
         <p className="t-label text-blue">{getCapability(item.capability)?.title}</p>

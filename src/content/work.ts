@@ -20,6 +20,7 @@ export const work: CaseStudy[] = [
     outcome:
       "Customers can run existing applications on current hardware and in virtual and cloud environments, extending the life of systems they depend on.",
     offices: ["copenhagen", "stuttgart", "boston", "malmo"],
+    visual: "kernel",
     art: 1,
   },
   {
@@ -39,6 +40,7 @@ export const work: CaseStudy[] = [
     outcome:
       "Operations teams make infrastructure and application decisions from data, and spot resiliency risks before they turn into incidents.",
     offices: ["athens", "perth", "boston", "malmo"],
+    visual: "mainframe",
     art: 2,
   },
   {
@@ -57,6 +59,7 @@ export const work: CaseStudy[] = [
     stack: ["Python", "TypeScript", "React", "Time-series", "Kubernetes"],
     outcome: "Building operators get actionable insight to tune climate control and reduce energy use.",
     offices: ["copenhagen", "malmo", "yerevan"],
+    visual: "scada",
     art: 3,
   },
   {
@@ -75,6 +78,7 @@ export const work: CaseStudy[] = [
     stack: ["Hadoop", "Spark", "ML", "NLP", "Java", "Python"],
     outcome: "Users design and run real-time analytics applications far faster than with hand-built pipelines.",
     offices: ["athens", "boston"],
+    visual: "streams",
     art: 4,
   },
   {
@@ -92,6 +96,7 @@ export const work: CaseStudy[] = [
     stack: ["Go", "C++", "SRT", "JavaScript", "Kubernetes", "AWS"],
     outcome: "Reliable low-latency distribution of live streams at scale.",
     offices: ["yerevan"],
+    visual: "video",
     art: 5,
   },
   {
@@ -109,6 +114,7 @@ export const work: CaseStudy[] = [
     stack: ["Python", "gRPC", "LLVM", "React", "Docker", "Kubernetes", "Terraform"],
     outcome: "Simulation as a service that teams extend with their own models.",
     offices: ["copenhagen"],
+    visual: "simulation",
     art: 6,
   },
   {
@@ -126,6 +132,7 @@ export const work: CaseStudy[] = [
     stack: ["JavaScript", "Erlang", "Real-time"],
     outcome: "A single fast destination for live and historical game data.",
     offices: ["yerevan"],
+    visual: "gaming",
     art: 7,
   },
 ];

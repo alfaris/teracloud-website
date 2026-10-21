@@ -20,7 +20,7 @@ export default function CapabilitiesPage() {
         intro="Six capability areas, one standard of craft. Our teams build and maintain software that sits deep in the stack — and keep it running for decades."
       />
       <Section>
-        <CapabilityGrid headingLevel="h2" />
+        <CapabilityGrid headingLevel="h2" detailed />
       </Section>
       <Section tone="mist" label="Across every project" title="Quality and support built in.">
         <ul className="grid gap-6 md:grid-cols-2">

@@ -20,8 +20,19 @@ export type CaseStudy = {
   stack: string[];
   outcome: string;
   offices: string[];
+  // Cover artwork drawn by CaseArt until real imagery exists: `visual` picks
+  // the illustration (it falls back to one for the capability), `art` seeds
+  // its small variations.
+  visual?: CaseVisual;
   art: number;
+  // Real project imagery. When set it replaces the illustration.
+  image?: ImageRef;
 };
+
+export const CASE_VISUALS = ["kernel", "mainframe", "scada", "streams", "video", "simulation", "gaming"] as const;
+export type CaseVisual = (typeof CASE_VISUALS)[number];
+
+export type ImageRef = { src: string; alt: string; width: number; height: number };
 
 export type Office = {
   slug: string;

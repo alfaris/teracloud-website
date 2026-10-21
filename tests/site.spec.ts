@@ -78,6 +78,23 @@ test("hero falls back to static poster under reduced motion", async ({ page }) =
   await expect(page.locator("canvas")).toHaveCount(0);
 });
 
+test("revealed content is visible under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/capabilities");
+  const cards = page.locator("[data-reveal]");
+  await expect(cards.first()).toBeVisible();
+  for (const opacity of await cards.evaluateAll((els) => els.map((el) => getComputedStyle(el).opacity))) {
+    expect(opacity).toBe("1");
+  }
+});
+
+test("each case study has its own cover illustration", async ({ page }) => {
+  await page.goto("/work");
+  const covers = await page.locator("article svg[aria-hidden]").evaluateAll((els) => els.map((el) => el.innerHTML));
+  expect(covers.length).toBeGreaterThan(1);
+  expect(new Set(covers).size).toBe(covers.length);
+});
+
 test("hero renders WebGL canvas with motion allowed", async ({ page, isMobile }) => {
   test.skip(isMobile, "desktop only");
   await page.goto("/");

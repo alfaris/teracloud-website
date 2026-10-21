@@ -121,6 +121,7 @@
     position: relative;
     --brace: 14px;
     --brace-gap: 0px;
+    --brace-inset: 0px;
   }
   .brace-frame::before,
   .brace-frame::after {
@@ -134,15 +135,15 @@
     pointer-events: none;
   }
   .brace-frame::before {
-    top: 0;
-    left: 0;
+    top: var(--brace-inset);
+    left: var(--brace-inset);
     border-width: 2px 0 0 2px;
     border-top-left-radius: 6px;
     transform: translate(calc(var(--brace-gap) * -1), calc(var(--brace-gap) * -1));
   }
   .brace-frame::after {
-    right: 0;
-    bottom: 0;
+    right: var(--brace-inset);
+    bottom: var(--brace-inset);
     border-width: 0 2px 2px 0;
     border-bottom-right-radius: 6px;
     transform: translate(var(--brace-gap), var(--brace-gap));
@@ -150,6 +151,26 @@
   .brace-frame:hover,
   .brace-frame:focus-within {
     --brace-gap: 6px;
+  }
+  /* Braces that appear on hover and focus only, inset so a clipping parent
+     (a hairline grid) never cuts them off. */
+  .brace-frame-reveal {
+    --brace-inset: 14px;
+  }
+  .brace-frame-reveal::before,
+  .brace-frame-reveal::after {
+    opacity: 0;
+    transition-property: transform, opacity;
+  }
+  .brace-frame-reveal:hover,
+  .brace-frame-reveal:focus-within {
+    --brace-gap: 4px;
+  }
+  .brace-frame-reveal:hover::before,
+  .brace-frame-reveal:hover::after,
+  .brace-frame-reveal:focus-within::before,
+  .brace-frame-reveal:focus-within::after {
+    opacity: 1;
   }
   .on-dark .brace-frame::before,
   .on-dark .brace-frame::after {
@@ -170,6 +191,10 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 

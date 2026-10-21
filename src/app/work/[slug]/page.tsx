@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/ui/Section";
 import { ChipList } from "@/components/ui/Chip";
-import { CaseArt } from "@/components/sections/CaseArt";
+import { CaseCover } from "@/components/sections/CaseCover";
 import { WorkCard } from "@/components/sections/WorkCard";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { getCapability } from "@/content/capabilities";
@@ -36,8 +36,8 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
       <PageHeader label={cap?.title} title={w.title} intro={w.summary} crumbs={[{ href: "/work", label: "Work" }, { href: `/work/${w.slug}`, label: w.title }]} />
 
       <div className="container-tc -mt-px">
-        <div className="mt-12 overflow-hidden rounded-2xl bg-ink-900">
-          <CaseArt seed={w.art} className="aspect-[21/9] h-auto w-full" />
+        <div className="mt-12 aspect-[4/3] overflow-hidden rounded-2xl bg-ink-900 sm:aspect-[21/9]">
+          <CaseCover item={w} sizes="(min-width: 1280px) 1216px, 100vw" preload />
         </div>
       </div>
 
