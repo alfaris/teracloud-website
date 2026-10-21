@@ -56,8 +56,8 @@ export type Job = {
 
 export type TitledText = { title: string; body: string };
 
-// Editable company-wide copy. Identity that code depends on (name, URL, job
-// board) stays in site.ts.
+// Company-wide copy (src/content/site.ts → siteSettings). Identity that code
+// depends on (name, URL, job board) is the separate `site` object there.
 export type SiteSettings = {
   email: string;
   address: { street: string; postalCode: string; city: string; country: string };

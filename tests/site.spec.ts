@@ -107,22 +107,10 @@ test("unknown URLs get the 404 page with site chrome", async ({ page }) => {
   expect(results.violations.map((v) => v.id)).toEqual([]);
 });
 
-test("content studio is served at /studio and not indexed", async ({ request }) => {
-  const res = await request.get("/studio");
-  expect(res.status()).toBe(200);
-  expect(await res.text()).toMatch(/<meta name="robots" content="noindex"/);
-});
-
-test("revalidation webhook rejects unsigned requests", async ({ request }) => {
-  const res = await request.post("/api/revalidate", { data: { _type: "office" } });
-  // 500 when SANITY_REVALIDATE_SECRET is unset, 401 when it is set.
-  expect([401, 500]).toContain(res.status());
-});
-
 test("news cards link out to the original posts", async ({ page }) => {
   await page.goto("/");
   const section = page.locator("section", { has: page.getByRole("heading", { name: "Latest from Teracloud." }) });
-  // No local fallback news: the section only exists when Sanity has posts.
+  // The section is left out while src/content/news.ts has no posts.
   test.skip((await section.count()) === 0, "no news posts");
   const links = section.getByRole("link");
   expect(await links.count()).toBeLessThanOrEqual(3);

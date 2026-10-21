@@ -1,7 +1,7 @@
 import type { SiteSettings } from "./types";
 
 // Identity the code depends on (metadata base, canonical URLs, the UKG job
-// board adapter). Not editable in the CMS.
+// board adapter). Change with care.
 export const site = {
   name: "Teracloud",
   legalName: "Teracloud ApS",
@@ -18,8 +18,8 @@ export const nav = [
   { href: "/about", label: "About" },
 ] as const;
 
-// Editable copy. Lives in Sanity (siteSettings) when it is configured; this is
-// the fallback and the seed source. Read it through src/lib/content.ts.
+// Company-wide copy used across pages. Pages read it through
+// src/lib/content.ts.
 export const siteSettings: SiteSettings = {
   email: "info@teracloud.com",
   address: {

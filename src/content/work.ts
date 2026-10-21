@@ -1,4 +1,5 @@
-// Fallback content and seed source for Sanity. Read it through src/lib/content.ts.
+// Site content: edit it here (see README → Editing content). Pages read it
+// through src/lib/content.ts.
 import type { CaseStudy } from "./types";
 
 // Client names are anonymized pending NDA review. Outcomes are qualitative

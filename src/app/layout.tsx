@@ -28,8 +28,8 @@ export const viewport: Viewport = {
   themeColor: "#0e0e12",
 };
 
-// Shared by the public site, app/(site), and the embedded Studio, app/studio.
-// Site chrome and styles live in SiteChrome so Studio renders without them.
+// Bare document shell. Header, footer and global styles live in SiteChrome,
+// used by app/(site)/layout.tsx and the root not-found page.
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={manrope.variable}>
