@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { z } from "zod";
+import { sendMail } from "@/lib/mail";
 
 export type ContactState = { status: "idle" | "success" | "error"; message?: string; errors?: Record<string, string> };
 
@@ -40,29 +41,27 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
   if (limited(ip)) return { status: "error", message: "You've sent several messages in a few minutes. Wait a moment and try again, or email info@teracloud.com." };
 
   const { intent, name, email, company, message } = parsed.data;
-  const key = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO ?? "info@teracloud.com";
+  // Optional per-intent inboxes, e.g. CONTACT_TO_PARTNERSHIP=sales@teracloud.com.
+  const to = process.env[`CONTACT_TO_${intent.toUpperCase()}`] || process.env.CONTACT_TO || "info@teracloud.com";
   const from = process.env.CONTACT_FROM ?? "Teracloud website <website@teracloud.com>";
 
-  if (!key) {
+  const result = await sendMail({
+    from,
+    to,
+    replyTo: email,
+    subject: `[${intent}] ${name}${company ? ` — ${company}` : ""}`,
+    text: `Intent: ${intent}\nName: ${name}\nEmail: ${email}\nCompany: ${company ?? "-"}\n\n${message}`,
+  });
+
+  if (result === "unconfigured") {
     if (process.env.NODE_ENV !== "production") {
-      console.info("[contact] RESEND_API_KEY not set — message not sent:", { intent, name, email, company });
+      console.info("[contact] No SMTP_HOST or RESEND_API_KEY set — message not sent:", { intent, name, email, company });
       return { status: "success" };
     }
     return { status: "error", message: "We can't send messages from this form right now. Your text is still here, so you can copy it into an email to info@teracloud.com." };
   }
-
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from,
-      to,
-      reply_to: email,
-      subject: `[${intent}] ${name}${company ? ` — ${company}` : ""}`,
-      text: `Intent: ${intent}\nName: ${name}\nEmail: ${email}\nCompany: ${company ?? "-"}\n\n${message}`,
-    }),
-  });
-  if (!res.ok) return { status: "error", message: "We couldn't send your message. Your text is still here: try again, or email it to info@teracloud.com." };
+  if (result === "failed") {
+    return { status: "error", message: "We couldn't send your message. Your text is still here: try again, or email it to info@teracloud.com." };
+  }
   return { status: "success" };
 }

@@ -23,10 +23,10 @@ export function HeroCanvas() {
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    // Phones and low-core devices keep the static poster: the scene sits behind
-    // the copy there anyway, and WebGL would cost battery and main-thread time.
+    // Tablets and up get the 3D scene; phones and low-core devices keep the
+    // static poster, where WebGL would cost battery and main-thread time.
     const capable = () =>
-      window.matchMedia("(min-width: 1024px)").matches && (navigator.hardwareConcurrency ?? 8) > 4;
+      window.matchMedia("(min-width: 768px)").matches && (navigator.hardwareConcurrency ?? 8) > 4;
     const decide = () => setEnabled(!mq.matches && capable() && supportsWebGL());
     // Start only after the page has loaded and the main thread is idle.
     const idle = window.requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));

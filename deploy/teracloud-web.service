@@ -1,0 +1,26 @@
+# Alternative to Docker: run the standalone build with systemd.
+# Build on the server (or in CI) with `npm ci && npm run build`, then copy
+#   .next/standalone/  → /srv/teracloud-web/
+#   .next/static/      → /srv/teracloud-web/.next/static/
+#   public/            → /srv/teracloud-web/public/
+# and install this file as /etc/systemd/system/teracloud-web.service.
+
+[Unit]
+Description=teracloud.com (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+User=teracloud-web
+WorkingDirectory=/srv/teracloud-web
+EnvironmentFile=/etc/teracloud-web.env
+Environment=NODE_ENV=production PORT=3000 HOSTNAME=127.0.0.1 NEXT_TELEMETRY_DISABLED=1
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/srv/teracloud-web/.next/cache
+
+[Install]
+WantedBy=multi-user.target

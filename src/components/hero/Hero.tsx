@@ -9,7 +9,7 @@ export function Hero() {
       <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_70%_45%,rgb(42_42_221/0.35),transparent_60%)]" />
 
       {/* 3D stage sits right on desktop, behind the copy on mobile */}
-      <div className="absolute inset-x-0 -top-[10%] bottom-[35%] -z-10 opacity-35 sm:opacity-50 lg:inset-y-0 lg:left-[42%] lg:opacity-100">
+      <div className="absolute inset-x-0 -top-[10%] bottom-[35%] -z-10 opacity-35 sm:opacity-50 lg:inset-y-0 lg:left-[46%] lg:opacity-100">
         <HeroCanvas />
       </div>
 

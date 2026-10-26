@@ -20,9 +20,9 @@ Open http://localhost:3000.
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
 | `npm test` | Playwright + axe against a production server on port 3020 (run `npm run build` first) |
 
-The contact form sends mail through Resend. Copy `.env.example` to
-`.env.local` and set `RESEND_API_KEY` to try it; without it the form logs to the
-console in development.
+The contact form sends mail through the company mail server (SMTP) or Resend;
+copy `.env.example` to `.env.local` and fill in the mail settings to try it.
+Without them the form logs to the console in development.
 
 ## Editing content
 
@@ -73,3 +73,57 @@ posts are added by hand (about a minute each):
 The three newest posts appear on the home page, and the three newest tagged
 `culture` or `hiring` on Careers. Both sections stay hidden while there are no
 posts.
+
+## Deployment (Teracloud's own server)
+
+The site builds to a self-contained Node.js server (`output: "standalone"`).
+Put nginx (or another reverse proxy) in front of it for TLS, `www` → apex and
+caching of build assets. Ready-made files are in `deploy/`.
+
+### With Docker (recommended)
+
+```bash
+docker build -t teracloud-web \
+  --build-arg NEXT_PUBLIC_PLAUSIBLE_DOMAIN=teracloud.com .
+docker run -d --name teracloud-web --restart unless-stopped \
+  -p 127.0.0.1:3000:3000 --env-file /etc/teracloud-web.env \
+  -v teracloud-web-cache:/app/.next/cache teracloud-web
+```
+
+### Without Docker (systemd)
+
+```bash
+npm ci && npm run build
+cp -r .next/standalone/. /srv/teracloud-web/
+cp -r .next/static /srv/teracloud-web/.next/static
+cp -r public /srv/teracloud-web/public
+sudo systemctl restart teracloud-web   # unit file: deploy/teracloud-web.service
+```
+
+Then install `deploy/nginx.conf` (set the certificate paths) and point the
+`teracloud.com` and `www.teracloud.com` DNS records at the server.
+
+### Configuration
+
+All settings are environment variables; see `.env.example`.
+
+| Setting | When | Purpose |
+| --- | --- | --- |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | runtime | Contact form email through the company mail server |
+| `CONTACT_TO`, `CONTACT_TO_PARTNERSHIP` / `_CAREERS` / `_GENERAL` | runtime | Where contact messages go |
+| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`, `NEXT_PUBLIC_PLAUSIBLE_SRC` | build | Cookieless analytics (also opens the CSP for its script) |
+
+Analytics goals recorded automatically: `Partner CTA`, `Careers CTA`,
+`Apply click`, `LinkedIn click` and `Contact submit` (with the topic).
+
+Jobs refresh from the UKG board every hour; the page cache lives in
+`.next/cache`, so keep it on a volume to survive restarts. One instance is
+enough for this site; running several needs a shared cache handler (see the
+Next.js self-hosting guide).
+
+### Security headers
+
+`next.config.ts` sends a Content-Security-Policy without nonces (pages are
+prerendered), plus HSTS, `X-Frame-Options`, `Referrer-Policy` and
+`Permissions-Policy`. If you add a third-party script, add its origin to the CSP.
+

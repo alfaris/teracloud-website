@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { site } from "@/content/site";
 import { getSiteSettings } from "@/lib/content";
+import { Analytics } from "@/components/layout/Analytics";
 
 const manrope = localFont({
   src: "../fonts/Manrope-Variable.woff2",
@@ -33,7 +34,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={manrope.variable}>
-      <body className="flex min-h-screen flex-col">{children}</body>
+      <body className="flex min-h-screen flex-col">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

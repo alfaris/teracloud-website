@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import clsx from "clsx";
 import { submitContact, type ContactState } from "./actions";
+import { track } from "@/components/layout/Analytics";
 
 const intents = [
   { value: "partnership", label: "A project or partnership" },
@@ -30,6 +31,12 @@ export function ContactForm() {
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setValues((v) => ({ ...v, [name]: e.target.value })),
   });
   const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (state.status === "success") track("Contact submit", { intent });
+    // Only when a submission succeeds, not when the intent toggle changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   // After a failed submit, move focus to the first field that needs attention.
   useEffect(() => {

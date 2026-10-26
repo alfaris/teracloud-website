@@ -34,7 +34,7 @@ export const siteSettings: SiteSettings = {
     "Teracloud is an R&D partner for product companies built on deep technology — operating systems, mainframes, compilers, real-time data and industrial energy software. 200+ engineers across 8 hubs.",
   whistleblowerUrl: "https://whistleblowersoftware.com/secure/teracloud",
   stats: [
-    { value: 2015, label: "Founded", suffix: "" },
+    { value: 10, label: "Years of systems engineering", suffix: "+" },
     { value: 200, label: "Engineers & specialists", suffix: "+" },
     { value: 8, label: "Engineering hubs", suffix: "" },
     { value: 12, label: "Active projects", suffix: "" },

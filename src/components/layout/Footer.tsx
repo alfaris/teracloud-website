@@ -35,10 +35,10 @@ export async function Footer() {
         </div>
         <nav aria-label="Capabilities" className="lg:col-span-3 lg:col-start-6">
           <h2 className="t-label text-white/50">Capabilities</h2>
-          <ul className="mt-5 space-y-3">
+          <ul className="mt-4 space-y-1">
             {capabilities.map((c) => (
               <li key={c.slug}>
-                <Link className="text-white/80 hover:text-white" href={`/capabilities/${c.slug}`}>
+                <Link className="inline-block py-1.5 text-white/80 hover:text-white" href={`/capabilities/${c.slug}`}>
                   {c.title}
                 </Link>
               </li>
@@ -47,10 +47,10 @@ export async function Footer() {
         </nav>
         <nav aria-label="Company" className="lg:col-span-2">
           <h2 className="t-label text-white/50">Company</h2>
-          <ul className="mt-5 space-y-3">
+          <ul className="mt-4 space-y-1">
             {company.map((c) => (
               <li key={c.href}>
-                <Link className="text-white/80 hover:text-white" href={c.href}>
+                <Link className="inline-block py-1.5 text-white/80 hover:text-white" href={c.href}>
                   {c.label}
                 </Link>
               </li>
@@ -59,11 +59,11 @@ export async function Footer() {
         </nav>
         <nav aria-label="Legal" className="lg:col-span-2">
           <h2 className="t-label text-white/50">Legal</h2>
-          <ul className="mt-5 space-y-3">
-            <li><Link className="text-white/80 hover:text-white" href="/privacy">Privacy policy</Link></li>
-            <li><Link className="text-white/80 hover:text-white" href="/cookies">Cookies</Link></li>
+          <ul className="mt-4 space-y-1">
+            <li><Link className="inline-block py-1.5 text-white/80 hover:text-white" href="/privacy">Privacy policy</Link></li>
+            <li><Link className="inline-block py-1.5 text-white/80 hover:text-white" href="/cookies">Cookies</Link></li>
             <li>
-              <a className="text-white/80 hover:text-white" href={settings.whistleblowerUrl} target="_blank" rel="noopener noreferrer">
+              <a className="inline-block py-1.5 text-white/80 hover:text-white" href={settings.whistleblowerUrl} target="_blank" rel="noopener noreferrer">
                 Whistleblower hotline <span aria-hidden>↗</span>
                 <span className="sr-only">(opens in a new tab)</span>
               </a>
