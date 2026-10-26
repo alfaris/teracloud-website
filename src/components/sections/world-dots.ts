@@ -1,6 +1,6 @@
 // Land dots of the Teracloud brand world map ("The Map", office stationery),
-// one cell per dot: 191 columns spanning 180°W–180°E and 91 rows from 77.5°N
-// to 61.5°S. Each run of dots is one subpath; HubsMap draws it with a round
+// one cell per dot (191 × 91). The map is a Mercator projection; HubsMap holds
+// the fitted degree-to-dot constants. Each run of dots is one subpath, drawn with a round
 // dash per unit. Generated from The Map.svg; don't edit by hand.
 export const MAP_COLS = 191;
 export const MAP_ROWS = 91;

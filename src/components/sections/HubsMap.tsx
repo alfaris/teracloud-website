@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Office } from "@/content/types";
 import { getOffices } from "@/lib/content";
-import { LAND_DOTS, MAP_COLS, MAP_LAT_BOTTOM, MAP_LAT_TOP, MAP_ROWS } from "./world-dots";
+import { LAND_DOTS, MAP_COLS, MAP_ROWS } from "./world-dots";
 
 // The brand world map (dot-matrix land, leader-line labels with coordinates)
 // with arcs from HQ, the first office in site order. Decorative; the list
@@ -10,9 +10,18 @@ const U = 8; // SVG units per dot
 const W = MAP_COLS * U;
 const H = MAP_ROWS * U;
 const PAD_TOP = 80; // room for labels above the northernmost hubs
+// The brand map is a Mercator projection, not a plain lat/lng grid. These
+// constants map degrees to dot columns/rows; they were fitted to coastline
+// landmarks on the dot grid (Iberia, North Cape, Florida, Cape York,
+// Tasmania, Cape Agulhas, Cape Horn…) and are accurate to about one dot.
+const COL_PER_DEG = 0.5401;
+const COL_AT_0 = 95.23;
+const ROW_PER_MERC_DEG = -0.5268;
+const ROW_AT_EQUATOR = 54.62;
+const mercator = (lat: number) => (Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360)) * 180) / Math.PI;
 const project = ([lat, lng]: [number, number]) => [
-  ((lng + 180) / 360) * (MAP_COLS - 1) * U + U / 2,
-  ((MAP_LAT_TOP - lat) / (MAP_LAT_TOP - MAP_LAT_BOTTOM)) * (MAP_ROWS - 1) * U + U / 2,
+  (COL_PER_DEG * lng + COL_AT_0) * U + U / 2,
+  (ROW_PER_MERC_DEG * mercator(lat) + ROW_AT_EQUATOR) * U + U / 2,
 ];
 
 const CITY = 30; // font sizes and line heights, in SVG units
@@ -23,7 +32,7 @@ const LINE = 35;
 // map. Unknown offices get a label to the right.
 const LABEL: Record<string, { dx: number; dy: number; end?: boolean }> = {
   copenhagen: { dx: -2, dy: -10, end: true },
-  stuttgart: { dx: -9, dy: 2, end: true },
+  stuttgart: { dx: -3, dy: 5, end: true },
   athens: { dx: -3, dy: 9, end: true },
   yerevan: { dx: 8, dy: -5 },
   cairo: { dx: 7, dy: 4 },
