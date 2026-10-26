@@ -49,7 +49,9 @@ export default async function HackathonPage() {
                 { k: "Year", v: String(latest.year) },
                 { k: "Dates", v: latest.dates ?? "—" },
                 { k: "Host", v: place(latest) },
-                { k: "Teams", v: "Across all hubs" },
+                latest.stats?.[0]
+                  ? { k: latest.stats[0].label, v: String(latest.stats[0].value) }
+                  : { k: "Teams", v: "From across our hubs" },
               ].map((d) => (
                 <div key={d.k} className="flex flex-col-reverse bg-ink-900 p-6">
                   <dt className="mt-1 text-sm text-white/55">{d.k}</dt>

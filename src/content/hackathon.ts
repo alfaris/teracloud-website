@@ -27,14 +27,23 @@ export const hackathonEditions: HackathonEdition[] = [
     dates: "14–16 September",
     theme: "AI and emerging technologies",
     summary:
-      "Teams from across the company explored practical applications of AI and emerging technologies.",
+      "25 Teraclouders from our offices worldwide met outside Tbilisi for three days of software engineering, competing to build the most innovative and profitable product — with time for football and sightseeing, too.",
     highlights: [
       {
-        title: "Embedded AI for predictive maintenance",
+        title: "Winner: a three-person team",
+        body: "The recap post names the winners and thanks everyone who took part.",
+      },
+      {
+        title: "Entry: embedded AI for predictive maintenance",
         body: "One team built an embedded AI sensor that analyses machine vibration data to spot early signs of equipment failure.",
       },
     ],
-    source: "https://dk.linkedin.com/in/vadim-ilves",
+    stats: [
+      { value: 25, label: "Teraclouders" },
+      { value: 3, label: "Days" },
+    ],
+    url: "https://www.linkedin.com/posts/teracloud-global-hackathon-last-week-ugcPost-7508442628795891712-pEHZ/",
+    source: "Teracloud company LinkedIn post, 2026-09-23; theme and entry from https://dk.linkedin.com/in/vadim-ilves",
   },
   {
     year: 2025,

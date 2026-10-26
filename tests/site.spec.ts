@@ -12,6 +12,7 @@ const pages = [
   "/locations/yerevan",
   "/careers",
   "/hackathon",
+  "/news",
   "/about",
   "/contact",
   "/privacy",
@@ -143,8 +144,9 @@ test("news cards link out to the original posts", async ({ page }) => {
   const section = page.locator("section", { has: page.getByRole("heading", { name: "Latest from Teracloud." }) });
   // The section is left out while src/content/news.ts has no posts.
   test.skip((await section.count()) === 0, "no news posts");
-  const links = section.getByRole("link");
+  const links = section.locator("article").getByRole("link");
   expect(await links.count()).toBeLessThanOrEqual(3);
+  await expect(section.getByRole("link", { name: "All news" })).toHaveAttribute("href", "/news");
   for (const link of await links.all()) {
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", /noopener/);

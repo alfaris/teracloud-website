@@ -10,5 +10,5 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"], channel: "chrome" } },
     { name: "mobile", use: { ...devices["Pixel 7"], channel: "chrome" } },
   ],
-  webServer: { command: "npm run start -- --port 3020", url: "http://localhost:3020", reuseExistingServer: true, timeout: 120_000 },
+  webServer: { command: "PORT=3020 npm run serve", url: "http://localhost:3020", reuseExistingServer: true, timeout: 120_000 },
 });

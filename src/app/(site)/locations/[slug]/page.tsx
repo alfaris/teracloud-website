@@ -36,7 +36,7 @@ export default async function OfficePage({ params }: PageProps<"/locations/[slug
       <PageHeader
         label={o.slug === "copenhagen" ? "Headquarters" : "Engineering hub"}
         title={`Teracloud ${o.city}`}
-        intro={`${o.country}. Teams here work on ${o.focus.slice(0, -1).join(", ").toLowerCase()}${o.focus.length > 1 ? " and " : ""}${o.focus.at(-1)?.toLowerCase()}.`}
+        intro={`${o.country}.${o.since ? ` Since ${o.since}.` : ""}${o.entity ? ` Home to ${o.entity}, our ${o.city} lab.` : ""} Teams here work on ${o.focus.slice(0, -1).join(", ").toLowerCase()}${o.focus.length > 1 ? " and " : ""}${o.focus.at(-1)?.toLowerCase()}.`}
         crumbs={[{ href: "/locations", label: "Locations" }, { href: `/locations/${o.slug}`, label: o.city }]}
       />
       <Section>

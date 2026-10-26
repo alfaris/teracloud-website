@@ -149,6 +149,9 @@ export default async function Home() {
       {news.length > 0 && (
         <Section tone="mist" label="News" title="Latest from Teracloud.">
           <NewsCards posts={news} />
+          <div className="mt-10">
+            <Button href="/news" variant="secondary">All news</Button>
+          </div>
         </Section>
       )}
 

@@ -42,6 +42,8 @@ export type Office = {
   address?: string;
   focus: string[];
   coords: [lat: number, lng: number];
+  since?: number; // year the hub opened
+  entity?: string; // local company or lab name, e.g. Nubistech in Cairo
 };
 
 export type Company = {

@@ -35,6 +35,7 @@ export const offices: Office[] = [
     country: "Greece",
     region: "Europe",
     focus: ["Real-time analytics (Streams)", "Replatforming", "Mainframe capacity planning"],
+    since: 2023,
     coords: [37.984, 23.728],
   },
   {
@@ -43,6 +44,7 @@ export const offices: Office[] = [
     country: "Armenia",
     region: "Europe",
     focus: ["Gaming portal", "Video stream distribution", "Energy monitoring (SCADA)", "Compilers & tools"],
+    since: 2020,
     coords: [40.179, 44.499],
   },
   {
@@ -51,6 +53,7 @@ export const offices: Office[] = [
     country: "Egypt",
     region: "MENA",
     focus: ["Industrial heat-pump tools", "Building energy planning & simulation", "AI-assisted reporting"],
+    entity: "Nubistech",
     coords: [30.044, 31.236],
   },
   {

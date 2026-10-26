@@ -16,7 +16,7 @@ Open http://localhost:3000.
 | Script | What it does |
 | --- | --- |
 | `npm run dev` | Development server |
-| `npm run build` / `npm start` | Production build and server |
+| `npm run build` / `npm run serve` | Production build, then the standalone server (as deployed) |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
 | `npm test` | Playwright + axe against a production server on port 3020 (run `npm run build` first) |
 

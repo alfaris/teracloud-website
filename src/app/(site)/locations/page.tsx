@@ -26,7 +26,7 @@ export default async function LocationsPage() {
             <li key={o.slug}>
               <Link href={`/locations/${o.slug}`} className="brace-frame group block h-full rounded-2xl bg-mist p-6">
                 <h2 className="t-h3 group-hover:text-blue">{o.city}</h2>
-                <p className="text-gray">{o.country}{o.slug === "copenhagen" ? " · Headquarters" : ""}</p>
+                <p className="text-gray">{o.country}{o.slug === "copenhagen" ? " · Headquarters" : ""}{o.since ? ` · Since ${o.since}` : ""}</p>
                 <ul className="mt-5 space-y-1 text-sm text-ink/75">
                   {o.focus.slice(0, 3).map((f) => <li key={f}>{f}</li>)}
                 </ul>

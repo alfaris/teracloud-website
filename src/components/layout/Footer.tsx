@@ -10,6 +10,7 @@ const company = [
   { href: "/locations", label: "Locations" },
   { href: "/careers", label: "Careers" },
   { href: "/hackathon", label: "Hackathon" },
+  { href: "/news", label: "News" },
   { href: "/contact", label: "Contact" },
 ];
 

@@ -15,6 +15,8 @@ export const metadata = pageMetadata({
 const timeline = [
   { year: "2015", text: "Teracloud is founded in Copenhagen to provide R&D services to partner companies." },
   { year: "2020", text: "Teracloud Armenia opens in Yerevan — today a 30+ engineer hub with a strong OS team." },
+  { year: "2023", text: "Teracloud Greece opens in Athens." },
+  { year: "2026", text: "Our Cairo lab becomes Nubistech, an official Teracloud lab." },
   { year: "Today", text: "200+ people across Copenhagen, Malmö, Stuttgart, Athens, Yerevan, Cairo, Boston and Perth, working on a dozen active projects." },
 ];
 

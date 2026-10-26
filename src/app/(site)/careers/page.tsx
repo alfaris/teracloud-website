@@ -85,6 +85,9 @@ export default async function CareersPage() {
       {news.length > 0 && (
         <Section tone="mist" label="Life at Teracloud" title="From our teams.">
           <NewsCards posts={news} />
+          <div className="mt-10">
+            <Button href="/news" variant="secondary">All news</Button>
+          </div>
         </Section>
       )}
 
