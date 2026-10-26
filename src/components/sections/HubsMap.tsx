@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Office } from "@/content/types";
 import { getOffices } from "@/lib/content";
 import { LAND_DOTS, MAP_COLS, MAP_ROWS } from "./world-dots";
+import { toDot } from "./map-projection";
+import { HubsMapStage } from "./HubsMapStage";
 
 // The brand world map (dot-matrix land, leader-line labels with coordinates)
 // with arcs from HQ, the first office in site order. Decorative; the list
@@ -10,19 +12,10 @@ const U = 8; // SVG units per dot
 const W = MAP_COLS * U;
 const H = MAP_ROWS * U;
 const PAD_TOP = 80; // room for labels above the northernmost hubs
-// The brand map is a Mercator projection, not a plain lat/lng grid. These
-// constants map degrees to dot columns/rows; they were fitted to coastline
-// landmarks on the dot grid (Iberia, North Cape, Florida, Cape York,
-// Tasmania, Cape Agulhas, Cape Horn…) and are accurate to about one dot.
-const COL_PER_DEG = 0.5401;
-const COL_AT_0 = 95.23;
-const ROW_PER_MERC_DEG = -0.5268;
-const ROW_AT_EQUATOR = 54.62;
-const mercator = (lat: number) => (Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360)) * 180) / Math.PI;
-const project = ([lat, lng]: [number, number]) => [
-  (COL_PER_DEG * lng + COL_AT_0) * U + U / 2,
-  (ROW_PER_MERC_DEG * mercator(lat) + ROW_AT_EQUATOR) * U + U / 2,
-];
+const project = (coords: [number, number]) => {
+  const [col, row] = toDot(coords);
+  return [col * U + U / 2, row * U + U / 2];
+};
 
 const CITY = 30; // font sizes and line heights, in SVG units
 const COORD = 20;
@@ -61,13 +54,21 @@ function labelGroups(offices: Office[]) {
   return groups;
 }
 
-export async function HubsMap() {
+// `interactive` (the Locations page) upgrades the map to three.js where the
+// device can handle it.
+export async function HubsMap({ interactive = false }: { interactive?: boolean } = {}) {
   const offices = await getOffices();
   const hq = offices[0];
   const [hx, hy] = project(hq.coords);
+  const hubs = offices.map((o) => {
+    const [col, row] = toDot(o.coords);
+    return { slug: o.slug, label: o === hq ? `${o.city} · HQ` : o.city, col, row, hq: o === hq };
+  });
+  const wrap = (svg: React.ReactNode) => (interactive ? <HubsMapStage hubs={hubs}>{svg}</HubsMapStage> : svg);
   return (
-    <div className="grid items-center gap-12 lg:grid-cols-12">
+    <div data-hubs-map className="grid items-center gap-12 lg:grid-cols-12">
       <div className="relative lg:col-span-8">
+        {wrap(
         <svg viewBox={`0 ${-PAD_TOP} ${W} ${H + PAD_TOP}`} className="h-auto w-full" aria-hidden>
           <path
             d={LAND_DOTS}
@@ -132,13 +133,14 @@ export async function HubsMap() {
               );
             })}
           </g>
-        </svg>
+        </svg>,
+        )}
       </div>
       <ul className="grid grid-cols-2 gap-x-6 gap-y-5 lg:col-span-4 lg:grid-cols-1">
         {offices.map((o) => (
           <li key={o.slug}>
-            <Link href={`/locations/${o.slug}`} className="group block">
-              <span className="font-semibold text-white group-hover:text-blue-300">{o.city}</span>
+            <Link href={`/locations/${o.slug}`} data-hub={o.slug} className="group block">
+              <span className="font-semibold text-white group-hover:text-blue-300 group-data-[active=true]:text-blue-300">{o.city}</span>
               <span className="block text-sm text-white/55">{o.country}{o === hq ? " · HQ" : ""}</span>
             </Link>
           </li>

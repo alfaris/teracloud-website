@@ -18,7 +18,7 @@ export default async function LocationsPage() {
     <>
       <PageHeader label="Locations" title="Eight hubs, one engineering culture." intro="Headquartered in Copenhagen, with teams across Europe, the US, MENA and Australia." />
       <Section tone="dark">
-        <HubsMap />
+        <HubsMap interactive />
       </Section>
       <Section>
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

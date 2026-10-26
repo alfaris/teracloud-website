@@ -152,3 +152,26 @@ test("news cards link out to the original posts", async ({ page }) => {
     await expect(link).toHaveAttribute("rel", /noopener/);
   }
 });
+
+test("locations map upgrades to 3D on desktop, stays SVG on phones", async ({ page, isMobile }) => {
+  await page.goto("/locations");
+  const map = page.locator("[data-hubs-map]");
+  await expect(map.locator("svg").first()).toBeVisible();
+  if (isMobile) {
+    await page.waitForTimeout(2000);
+    await expect(map.locator("canvas")).toHaveCount(0);
+  } else {
+    await expect(map.locator("canvas")).toHaveCount(1, { timeout: 10_000 });
+    // Hovering a hub in the list highlights it.
+    await map.locator('[data-hub="athens"]').hover();
+    await expect(map.locator('[data-hub="athens"]')).toHaveAttribute("data-active", "true");
+  }
+});
+
+test("only the Locations map loads 3D", async ({ page, isMobile }) => {
+  test.skip(isMobile, "desktop only");
+  await page.goto("/careers");
+  await page.locator("[data-hubs-map]").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(2000);
+  await expect(page.locator("[data-hubs-map] canvas")).toHaveCount(0);
+});
