@@ -65,14 +65,27 @@ test("job page has JobPosting JSON-LD and apply link", async ({ page }) => {
 test("contact form validates and submits", async ({ page }) => {
   await page.goto("/contact?intent=partnership");
   await page.getByRole("button", { name: "Send message" }).click();
-  await expect(page.getByText("Please check the highlighted fields.")).toBeVisible();
-  await page.getByLabel("Name").fill("Test Person");
+  await expect(page.getByText(/fields need attention/)).toBeVisible();
+  // Focus moves to the first field that needs attention.
+  await expect(page.getByLabel("Your name")).toBeFocused();
+  await page.getByLabel("Your name").fill("Test Person");
   await page.getByLabel("Work email").fill("test@example.com");
   await page.getByLabel("Tell us about your project").fill("We need help porting an OS to a new architecture.");
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Send message" }).click();
   // Without RESEND_API_KEY in production the action reports the fallback error; either outcome is a handled state.
-  await expect(page.getByText(/Thank you|temporarily unavailable/)).toBeVisible();
+  await expect(page.getByText(/Message sent|can't send messages from this form/)).toBeVisible();
+});
+
+test("contact form keeps what was typed after an error", async ({ page }) => {
+  await page.goto("/contact");
+  await page.getByLabel("Your name").fill("Test Person");
+  await page.getByLabel("Tell us about your project").fill("short");
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.getByText(/fields need attention/)).toBeVisible();
+  await expect(page.getByLabel("Your name")).toHaveValue("Test Person");
+  await expect(page.getByLabel("Tell us about your project")).toHaveValue("short");
+  await expect(page.getByLabel("Work email")).toBeFocused();
 });
 
 test("hero falls back to static poster under reduced motion", async ({ page }) => {

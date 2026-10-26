@@ -32,7 +32,7 @@ export default async function CareersPage() {
       >
         <div className="mt-10 flex flex-wrap gap-3">
           <Button href="#roles">See open roles</Button>
-          <Button href={site.jobBoardUrl} external variant="secondary">Job board</Button>
+          <Button href={site.jobBoardUrl} external variant="secondary">Full job board</Button>
         </div>
       </PageHeader>
 

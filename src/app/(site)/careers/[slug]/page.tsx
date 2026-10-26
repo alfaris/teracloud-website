@@ -34,7 +34,7 @@ export default async function JobPage({ params }: PageProps<"/careers/[slug]">) 
     <>
       <PageHeader label={j.department} title={j.title} intro={j.location} crumbs={[{ href: "/careers", label: "Careers" }, { href: `/careers/${j.slug}`, label: j.title }]}>
         <div className="mt-10 flex flex-wrap gap-3">
-          <Button href={j.applyUrl} external>Apply on our job board</Button>
+          <Button href={j.applyUrl} external>Apply for this role</Button>
           <Button href="/careers#roles" variant="secondary">All roles</Button>
         </div>
       </PageHeader>
@@ -44,7 +44,7 @@ export default async function JobPage({ params }: PageProps<"/careers/[slug]">) 
             <h2>About the role</h2>
             {j.summary.split(/\n+/).map((p) => <p key={p}>{p}</p>)}
             <p>
-              The full description and application form are on our job board. Applying takes a few minutes; a person reads
+              The full description and the application form are on our job board, which opens in a new tab. A person reads
               every application.
             </p>
           </div>
@@ -55,7 +55,7 @@ export default async function JobPage({ params }: PageProps<"/careers/[slug]">) 
               <div><dt className="t-label text-gray">Type</dt><dd className="mt-1 font-semibold">{j.employmentType === "FULL_TIME" ? "Full-time" : "Part-time"}</dd></div>
               <div><dt className="t-label text-gray">Posted</dt><dd className="mt-1 font-semibold"><time dateTime={j.postedAt}>{new Date(j.postedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</time></dd></div>
             </dl>
-            <Button href={j.applyUrl} external className="mt-6 w-full">Apply now</Button>
+            <Button href={j.applyUrl} external className="mt-6 w-full">Apply for this role</Button>
           </aside>
         </div>
       </Section>

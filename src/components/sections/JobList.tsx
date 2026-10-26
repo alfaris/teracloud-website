@@ -10,7 +10,7 @@ export function JobList({ jobs, email, emptyCity }: { jobs: Job[]; email: string
       <div className="rounded-2xl border border-dashed border-line p-8 text-center">
         <p className="t-h3">No open roles {emptyCity ? `in ${emptyCity} ` : ""}right now</p>
         <p className="mx-auto mt-3 max-w-md text-gray">
-          We hire throughout the year. Check the{" "}
+          We hire throughout the year. {emptyCity ? "See roles in other hubs on the" : "Check the"}{" "}
           <a className="text-blue underline underline-offset-4" href={site.jobBoardUrl} target="_blank" rel="noopener noreferrer">
             full job board<span className="sr-only"> (opens in a new tab)</span>
           </a>{" "}

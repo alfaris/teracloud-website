@@ -7,11 +7,11 @@ export type ContactState = { status: "idle" | "success" | "error"; message?: str
 
 const schema = z.object({
   intent: z.enum(["partnership", "careers", "general"]),
-  name: z.string().trim().min(2, "Please enter your name.").max(120),
-  email: z.email("Please enter a valid email address."),
+  name: z.string().trim().min(2, "Enter your name.").max(120),
+  email: z.email("Enter an email address like name@company.com."),
   company: z.string().trim().max(160).optional(),
-  message: z.string().trim().min(10, "Please write a few words about your request.").max(5000),
-  consent: z.literal("on", { message: "Please confirm you have read the privacy policy." }),
+  message: z.string().trim().min(10, "Add a few more words — at least 10 characters.").max(5000),
+  consent: z.literal("on", { message: "Tick the box to confirm you've read the privacy policy." }),
 });
 
 // Best-effort per-instance rate limit; swap for a shared store in production.
@@ -32,12 +32,12 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
   if (!parsed.success) {
     const errors: Record<string, string> = {};
     for (const issue of parsed.error.issues) errors[String(issue.path[0])] ??= issue.message;
-    return { status: "error", message: "Please check the highlighted fields.", errors };
+    return { status: "error", message: `${Object.keys(errors).length === 1 ? "One field needs" : `${Object.keys(errors).length} fields need`} attention. Check the messages below each field.`, errors };
   }
 
   const h = await headers();
   const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-  if (limited(ip)) return { status: "error", message: "Too many messages. Please try again in a few minutes." };
+  if (limited(ip)) return { status: "error", message: "You've sent several messages in a few minutes. Wait a moment and try again, or email info@teracloud.com." };
 
   const { intent, name, email, company, message } = parsed.data;
   const key = process.env.RESEND_API_KEY;
@@ -49,7 +49,7 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
       console.info("[contact] RESEND_API_KEY not set — message not sent:", { intent, name, email, company });
       return { status: "success" };
     }
-    return { status: "error", message: "The form is temporarily unavailable. Please email info@teracloud.com." };
+    return { status: "error", message: "We can't send messages from this form right now. Your text is still here, so you can copy it into an email to info@teracloud.com." };
   }
 
   const res = await fetch("https://api.resend.com/emails", {
@@ -63,6 +63,6 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
       text: `Intent: ${intent}\nName: ${name}\nEmail: ${email}\nCompany: ${company ?? "-"}\n\n${message}`,
     }),
   });
-  if (!res.ok) return { status: "error", message: "Something went wrong sending your message. Please email info@teracloud.com." };
+  if (!res.ok) return { status: "error", message: "We couldn't send your message. Your text is still here: try again, or email it to info@teracloud.com." };
   return { status: "success" };
 }
