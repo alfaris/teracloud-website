@@ -11,6 +11,7 @@ const pages = [
   "/locations",
   "/locations/yerevan",
   "/careers",
+  "/hackathon",
   "/about",
   "/contact",
   "/privacy",

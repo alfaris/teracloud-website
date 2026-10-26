@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const u = (p: string) => `${site.url}${p}`;
   return [
     { url: u("/"), priority: 1 },
-    ...["/capabilities", "/work", "/careers", "/ecosystem", "/locations", "/about", "/contact"].map((p) => ({ url: u(p), priority: 0.8 })),
+    ...["/capabilities", "/work", "/careers", "/ecosystem", "/locations", "/about", "/contact", "/hackathon"].map((p) => ({ url: u(p), priority: 0.8 })),
     ...capabilities.map((c) => ({ url: u(`/capabilities/${c.slug}`), priority: 0.7 })),
     ...work.map((w) => ({ url: u(`/work/${w.slug}`), priority: 0.7 })),
     ...offices.map((o) => ({ url: u(`/locations/${o.slug}`), priority: 0.6 })),

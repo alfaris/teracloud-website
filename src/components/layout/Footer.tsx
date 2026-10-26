@@ -9,6 +9,7 @@ const company = [
   { href: "/ecosystem", label: "Ecosystem" },
   { href: "/locations", label: "Locations" },
   { href: "/careers", label: "Careers" },
+  { href: "/hackathon", label: "Hackathon" },
   { href: "/contact", label: "Contact" },
 ];
 

@@ -6,7 +6,7 @@ import { JobBoard } from "@/components/sections/JobBoard";
 import { HubsMap } from "@/components/sections/HubsMap";
 import { NewsCards } from "@/components/sections/NewsCards";
 import { site } from "@/content/site";
-import { getLatestNews, getSiteSettings } from "@/lib/content";
+import { getHackathonEditions, getLatestNews, getSiteSettings } from "@/lib/content";
 import { getJobs } from "@/lib/jobs";
 import { pageMetadata } from "@/lib/seo";
 
@@ -17,10 +17,11 @@ export const metadata = pageMetadata({
 });
 
 export default async function CareersPage() {
-  const [jobs, { benefits, hiringSteps, email }, news] = await Promise.all([
+  const [jobs, { benefits, hiringSteps, email }, news, [hackathon]] = await Promise.all([
     getJobs(),
     getSiteSettings(),
     getLatestNews(3, ["culture", "hiring"]),
+    getHackathonEditions(),
   ]);
   return (
     <>
@@ -47,6 +48,23 @@ export default async function CareersPage() {
           ))}
         </ul>
       </Section>
+
+      {hackathon && (
+        <section className="on-dark bg-ink-900 text-white">
+          <div className="container-tc flex flex-col gap-8 py-16 sm:py-20 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="t-label text-blue-300">
+                <span aria-hidden className="font-mono">{"{ "}</span>Annual hackathon<span aria-hidden className="font-mono">{" }"}</span>
+              </p>
+              <h2 className="t-h2 mt-4 text-balance">Once a year, we build something new together.</h2>
+              <p className="t-lead mt-4 text-white/70">
+                Teams from every hub meet at the Teracloud Hackathon — most recently in {[hackathon.city, hackathon.country].filter(Boolean).join(", ")}, {hackathon.year}.
+              </p>
+            </div>
+            <Button href="/hackathon" variant="light" className="self-start lg:self-auto">About the hackathon</Button>
+          </div>
+        </section>
+      )}
 
       <Section id="roles" tone="mist" label="Open roles" title={`${jobs.length} open ${jobs.length === 1 ? "role" : "roles"}`}>
         <JobBoard jobs={jobs} email={email} />

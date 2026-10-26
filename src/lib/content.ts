@@ -1,10 +1,11 @@
 import { capabilities } from "@/content/capabilities";
+import { hackathonEditions } from "@/content/hackathon";
 import { sisterCompanies, partners } from "@/content/companies";
 import { news } from "@/content/news";
 import { offices } from "@/content/offices";
 import { siteSettings } from "@/content/site";
 import { work } from "@/content/work";
-import type { Capability, CaseStudy, Company, NewsPost, Office, SiteSettings } from "@/content/types";
+import type { Capability, CaseStudy, Company, HackathonEdition, NewsPost, Office, SiteSettings } from "@/content/types";
 
 // Every read of editable content goes through here, so pages don't depend on
 // where it is stored. Today that is the typed files in src/content (see
@@ -30,6 +31,11 @@ export async function getCompanies(): Promise<Company[]> {
 // Newest first, whatever order the file lists them in.
 export async function getNews(): Promise<NewsPost[]> {
   return news.toSorted((a, b) => b.date.localeCompare(a.date));
+}
+
+// Newest edition first.
+export async function getHackathonEditions(): Promise<HackathonEdition[]> {
+  return hackathonEditions.toSorted((a, b) => b.year - a.year);
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {

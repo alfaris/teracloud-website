@@ -117,6 +117,15 @@ export default async function Home() {
                 <p className="mt-2 text-gray">{b.body}</p>
               </li>
             ))}
+            <li className="sm:col-span-2">
+              <Link href="/hackathon" className="group flex items-center justify-between gap-4 rounded-2xl border border-line p-6 transition-colors hover:border-blue">
+                <span>
+                  <span className="t-label block text-blue">Annual hackathon</span>
+                  <span className="t-h3 mt-2 block">Once a year, teams from across our hubs build something new together.</span>
+                </span>
+                <span aria-hidden className="text-2xl text-blue transition-transform group-hover:translate-x-1">→</span>
+              </Link>
+            </li>
           </ul>
           <div className="flex flex-col justify-between rounded-2xl bg-ink-900 p-8 text-white on-dark lg:col-span-5">
             <div>

@@ -96,3 +96,16 @@ export type NewsPost = {
   topics: (typeof NEWS_TOPICS)[number][];
   image?: { src: string; alt: string; width: number; height: number };
 };
+
+// One edition of the annual Teracloud Hackathon (src/content/hackathon.ts).
+export type HackathonEdition = {
+  year: number;
+  city?: string;
+  country: string;
+  dates?: string; // human-readable, e.g. "14–16 September"
+  theme?: string;
+  summary: string;
+  highlights: { title: string; body: string }[];
+  source?: string; // where the facts come from (LinkedIn post or similar)
+  image?: ImageRef;
+};
