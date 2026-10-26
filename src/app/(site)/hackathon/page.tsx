@@ -99,6 +99,22 @@ export default async function HackathonPage() {
                       ))}
                     </ul>
                   )}
+                  {e.stats && e.stats.length > 0 && (
+                    <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl bg-line sm:grid-cols-4">
+                      {e.stats.map((s) => (
+                        <div key={s.label} className="flex flex-col-reverse bg-white p-4">
+                          <dt className="text-sm text-gray">{s.label}</dt>
+                          <dd className="text-3xl font-extrabold tracking-tight text-blue">{s.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
+                  {e.url && (
+                    <a href={e.url} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-1 font-semibold text-blue hover:text-blue-700">
+                      Read the {e.year} recap on LinkedIn <span aria-hidden>↗</span>
+                      <span className="sr-only">(opens in a new tab)</span>
+                    </a>
+                  )}
                   {e.image && (
                     <Image src={e.image.src} alt={e.image.alt} width={e.image.width} height={e.image.height} className="mt-6 h-auto w-full rounded-xl" sizes="(min-width: 1024px) 60vw, 100vw" />
                   )}

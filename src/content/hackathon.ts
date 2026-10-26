@@ -40,9 +40,23 @@ export const hackathonEditions: HackathonEdition[] = [
     year: 2025,
     city: "Cairo",
     country: "Egypt",
-    summary: "The 2025 edition was held in Cairo, home to one of our engineering hubs.",
-    highlights: [],
-    source: "Confirmed by Ahmed Faris (Teracloud), 2026-10-26",
+    dates: "23–25 September",
+    summary:
+      "Hosted by our Egyptian colleagues: a two-day tech marathon to devise new ways to improve our products, swap ideas and build team spirit across departments — with time among the pyramids, too.",
+    highlights: [
+      {
+        title: "Winner: THMI Edge automatic deployment",
+        body: "The judges were unanimous: a way to deploy the THMI Edge data-collection agent straight from the THMI Portal interface.",
+      },
+    ],
+    stats: [
+      { value: 36, label: "Teraclouders" },
+      { value: 9, label: "Teams" },
+      { value: 6, label: "Offices" },
+      { value: 5, label: "Judges" },
+    ],
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:7380604046551875584/",
+    source: "Teracloud company LinkedIn post, 2025-10-05",
   },
   {
     year: 2024,

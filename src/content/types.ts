@@ -106,6 +106,8 @@ export type HackathonEdition = {
   theme?: string;
   summary: string;
   highlights: { title: string; body: string }[];
+  stats?: { value: number; label: string }[];
+  url?: string; // public recap post, linked from the page
   source?: string; // where the facts come from (LinkedIn post or similar)
   image?: ImageRef;
 };

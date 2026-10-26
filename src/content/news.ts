@@ -15,4 +15,14 @@
 //   },
 import type { NewsPost } from "./types";
 
-export const news: NewsPost[] = [];
+export const news: NewsPost[] = [
+  {
+    id: "2025-10-hackathon-cairo",
+    title: "Teracloud Global Hackathon 2025: the results",
+    date: "2025-10-05",
+    summary:
+      "36 Teraclouders from 6 offices formed 9 teams in Cairo. The judges unanimously picked THMI Edge automatic deployment as the winner.",
+    url: "https://www.linkedin.com/feed/update/urn:li:activity:7380604046551875584/",
+    topics: ["company", "engineering", "culture"],
+  },
+];
