@@ -70,14 +70,14 @@ export function Header() {
                   href={item.href}
                   aria-current={isActive(item.href) ? "page" : undefined}
                   className={clsx(
-                    "relative rounded-full px-4 py-2 text-[0.9375rem] font-medium transition-colors",
+                    "relative rounded-full px-2.5 py-2 text-[0.875rem] font-medium transition-colors xl:px-4 xl:text-[0.9375rem]",
                     overHero ? "text-white/80 hover:text-white" : "text-ink/75 hover:text-blue",
                     isActive(item.href) && (overHero ? "text-white" : "text-blue"),
                   )}
                 >
                   {item.label}
                   {isActive(item.href) && (
-                    <span aria-hidden className="absolute inset-x-4 -bottom-0.5 h-0.5 rounded-full bg-current" />
+                    <span aria-hidden className="absolute inset-x-2.5 -bottom-0.5 h-0.5 rounded-full bg-current xl:inset-x-4" />
                   )}
                 </Link>
               </li>
@@ -89,7 +89,7 @@ export function Header() {
           <Link
             href="/contact?intent=partnership"
             className={clsx(
-              "hidden min-h-11 items-center rounded-full px-5 text-[0.9375rem] font-semibold transition-colors sm:inline-flex",
+              "hidden min-h-11 items-center whitespace-nowrap rounded-full px-5 text-[0.9375rem] font-semibold transition-colors sm:inline-flex",
               overHero ? "bg-white text-ink hover:bg-blue-50" : "bg-blue text-white hover:bg-blue-700",
             )}
           >

@@ -82,7 +82,7 @@ export default async function HackathonPage() {
           {editions.map((e, i) => (
             <Reveal as="li" key={e.year} delay={i * 0.06} className="relative">
               <span aria-hidden className="absolute -left-[41px] top-2 size-4 rounded-full border-4 border-mist bg-blue" />
-              <article className="grid gap-8 rounded-2xl bg-white p-8 lg:grid-cols-12">
+              <article id={`edition-${e.year}`} className="grid scroll-mt-28 gap-8 rounded-2xl bg-white p-8 lg:grid-cols-12">
                 <div className="lg:col-span-4">
                   <p className="font-mono text-blue">{e.year}</p>
                   <h3 className="t-h2 mt-2">{place(e)}</h3>
