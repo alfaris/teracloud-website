@@ -3,7 +3,8 @@
 //
 // Facts below come from public LinkedIn posts by Teracloud people; `source`
 // records where (it is never shown on the site). Fill in what
-// is still missing (2025 edition, winners, team counts, photos) before launch.
+// is still missing (dates and themes for 2024–2025, winners, team counts,
+// photos) before launch.
 import type { HackathonEdition } from "./types";
 
 export const hackathonIntro = {
@@ -34,6 +35,14 @@ export const hackathonEditions: HackathonEdition[] = [
       },
     ],
     source: "https://dk.linkedin.com/in/vadim-ilves",
+  },
+  {
+    year: 2025,
+    city: "Cairo",
+    country: "Egypt",
+    summary: "The 2025 edition was held in Cairo, home to one of our engineering hubs.",
+    highlights: [],
+    source: "Confirmed by Ahmed Faris (Teracloud), 2026-10-26",
   },
   {
     year: 2024,
