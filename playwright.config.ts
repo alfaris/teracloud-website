@@ -5,7 +5,13 @@ export default defineConfig({
   timeout: 60_000,
   fullyParallel: true,
   reporter: "list",
-  use: { baseURL: "http://localhost:3020", channel: "chrome" },
+  use: {
+    baseURL: "http://localhost:3020",
+    channel: "chrome",
+    // Lets headless Chrome fall back to software WebGL on machines without a
+    // GPU (CI), so the 3D tests can render a canvas there.
+    launchOptions: { args: ["--enable-unsafe-swiftshader"] },
+  },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"], channel: "chrome" } },
     { name: "mobile", use: { ...devices["Pixel 7"], channel: "chrome" } },

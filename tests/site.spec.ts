@@ -19,6 +19,13 @@ const pages = [
   "/cookies",
 ];
 
+// The 3D hero and map skip devices with 4 or fewer cores, which includes
+// GitHub's runners. Report 8 so the tests check the width, motion and
+// per-page rules the same way on every machine.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(navigator, "hardwareConcurrency", { get: () => 8 }));
+});
+
 for (const path of pages) {
   test(`a11y + basics: ${path}`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
