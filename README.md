@@ -6,12 +6,23 @@ CMS or other outside service.
 
 ## Getting started
 
+You need Node.js 24 (`.nvmrc` pins it: run `nvm use` if you use nvm), Git,
+and for `npm test` an installed Google Chrome.
+
 ```bash
-npm install
+git clone https://github.com/alfaris/teracloud-website.git
+cd teracloud-website
+npm ci
 npm run dev
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3000. To try the site as it runs in production, use
+`npm run build` and then `npm run serve`.
+
+Use `npm ci`, not `npm install`, unless you are adding or updating a package:
+it installs exactly what `package-lock.json` lists and leaves the file alone.
+When you do change packages, use npm 11.21 or newer, or CI's `npm ci` may
+reject the lock file.
 
 | Script | What it does |
 | --- | --- |
