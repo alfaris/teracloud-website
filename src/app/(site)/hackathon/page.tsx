@@ -13,6 +13,7 @@ export const metadata = pageMetadata({
   description:
     "The annual Teracloud Hackathon brings engineers from our hubs together to build new ideas. 2026 edition: Tbilisi, Georgia — AI and emerging technologies.",
   path: "/hackathon",
+  ownImage: true,
 });
 
 const place = (e: { city?: string; country: string }) => [e.city, e.country].filter(Boolean).join(", ");

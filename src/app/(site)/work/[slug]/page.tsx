@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/work/[slug]">): Promise<Metadata> {
   const w = await getCaseStudy((await params).slug);
   if (!w) return {};
-  return pageMetadata({ title: w.title, description: w.summary, path: `/work/${w.slug}` });
+  return pageMetadata({ title: w.title, description: w.summary, path: `/work/${w.slug}`, ownImage: true });
 }
 
 // Every slug is prerendered from generateStaticParams, so render the page

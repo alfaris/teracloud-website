@@ -18,7 +18,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/careers/[slug]">): Promise<Metadata> {
   const j = await getJob((await params).slug);
   if (!j) return {};
-  return pageMetadata({ title: `${j.title} — ${j.location}`, description: j.summary.slice(0, 155), path: `/careers/${j.slug}` });
+  return pageMetadata({ title: `${j.title} — ${j.location}`, description: j.summary.slice(0, 155), path: `/careers/${j.slug}`, ownImage: true });
 }
 
 // Every slug is prerendered from generateStaticParams, so render the page

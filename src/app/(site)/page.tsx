@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero } from "@/components/hero/Hero";
 import { Section } from "@/components/ui/Section";
@@ -13,6 +14,9 @@ import { NewsCards } from "@/components/sections/NewsCards";
 import { HackathonFeature } from "@/components/sections/HackathonFeature";
 import { getCaseStudies, getLatestNews, getSiteSettings, getSisterCompanies } from "@/lib/content";
 import { getJobs } from "@/lib/jobs";
+
+// Title and description come from the root layout; only the canonical is added.
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default async function Home() {
   const [jobs, work, { principles, benefits }, sisterCompanies, news] = await Promise.all([

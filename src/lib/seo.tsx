@@ -6,17 +6,25 @@ export function pageMetadata({
   title,
   description,
   path,
+  ownImage = false,
 }: {
   title: string;
   description: string;
   path: string;
+  /** The route has its own opengraph-image file. */
+  ownImage?: boolean;
 }): Metadata {
+  // Setting openGraph here replaces the parent's, which drops the site-wide
+  // app/opengraph-image, so name it explicitly. Routes with their own
+  // opengraph-image file pass ownImage, since images set here would win; for
+  // them the key must be absent, as even `images: undefined` suppresses the file.
+  const images = ownImage ? {} : { images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: site.name }] };
   return {
     title,
     description,
     alternates: { canonical: path },
-    openGraph: { title: `${title} · ${site.name}`, description, url: path, siteName: site.name, type: "website" },
-    twitter: { card: "summary_large_image", title: `${title} · ${site.name}`, description },
+    openGraph: { title: `${title} · ${site.name}`, description, url: path, siteName: site.name, type: "website", ...images },
+    twitter: { card: "summary_large_image", title: `${title} · ${site.name}`, description, ...images },
   };
 }
 

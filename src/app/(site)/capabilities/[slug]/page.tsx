@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/capabilities/[slug]">): Promise<Metadata> {
   const c = await getCapability((await params).slug);
   if (!c) return {};
-  return pageMetadata({ title: c.title, description: c.summary, path: `/capabilities/${c.slug}` });
+  return pageMetadata({ title: c.title, description: c.summary, path: `/capabilities/${c.slug}`, ownImage: true });
 }
 
 // Every slug is prerendered from generateStaticParams, so render the page
