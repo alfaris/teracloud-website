@@ -178,6 +178,9 @@ test("locations map upgrades to 3D on desktop, stays SVG on phones", async ({ pa
 
 test("home hubs map highlights a hub from the list and opens it from the map", async ({ page, isMobile }) => {
   test.skip(isMobile, "needs a pointer");
+  // The 2D map, as reduced-motion visitors, phones and low-core machines get it;
+  // on desktop it is otherwise covered by the 3D map once that loads.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const map = page.locator("[data-hubs-map]");
   await map.scrollIntoViewIfNeeded();
@@ -195,6 +198,9 @@ test("home hubs map highlights a hub from the list and opens it from the map", a
 
 test("the HQ dot opens Copenhagen, not Malmö drawn beside it", async ({ page, isMobile }) => {
   test.skip(isMobile, "needs a pointer");
+  // The 2D map, as reduced-motion visitors, phones and low-core machines get it;
+  // on desktop it is otherwise covered by the 3D map once that loads.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const map = page.locator("[data-hubs-map]");
   await map.scrollIntoViewIfNeeded();
@@ -204,6 +210,9 @@ test("the HQ dot opens Copenhagen, not Malmö drawn beside it", async ({ page, i
 
 test("a hub focused from the keyboard stays lit when the pointer passes", async ({ page, isMobile }) => {
   test.skip(isMobile, "needs a pointer");
+  // The 2D map, as reduced-motion visitors, phones and low-core machines get it;
+  // on desktop it is otherwise covered by the 3D map once that loads.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const map = page.locator("[data-hubs-map]");
   await map.locator('a[data-hub="athens"]').focus();
