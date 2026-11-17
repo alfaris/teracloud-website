@@ -60,8 +60,9 @@ function labelGroups(offices: Office[]) {
   return groups;
 }
 
-// `interactive` (the Locations page) upgrades the map to three.js where the
-// device can handle it. Every map responds to hover either way.
+// `interactive` (Home, Careers and Locations) upgrades the map to three.js
+// where the device can handle it, falling back to this SVG if the 3D map
+// can't run or fails. Every map responds to hover either way.
 export async function HubsMap({ interactive = false }: { interactive?: boolean } = {}) {
   const offices = await getOffices();
   const hq = offices[0];

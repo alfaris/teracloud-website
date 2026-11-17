@@ -123,7 +123,8 @@ test("each case study has its own cover illustration", async ({ page }) => {
 test("hero renders WebGL canvas with motion allowed", async ({ page, isMobile }) => {
   test.skip(isMobile, "desktop only");
   await page.goto("/");
-  await expect(page.locator("canvas")).toHaveCount(1, { timeout: 10_000 });
+  const hero = page.locator("section").filter({ has: page.locator("h1") });
+  await expect(hero.locator("canvas")).toHaveCount(1, { timeout: 10_000 });
 });
 
 test("mobile menu opens, traps scroll, closes on Escape", async ({ page, isMobile }) => {
@@ -177,6 +178,9 @@ test("locations map upgrades to 3D on desktop, stays SVG on phones", async ({ pa
 
 test("home hubs map highlights a hub from the list and opens it from the map", async ({ page, isMobile }) => {
   test.skip(isMobile, "needs a pointer");
+  // The 2D map, as reduced-motion visitors, phones and low-core machines get it;
+  // on desktop it is otherwise covered by the 3D map once that loads.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const map = page.locator("[data-hubs-map]");
   await map.scrollIntoViewIfNeeded();
@@ -194,6 +198,9 @@ test("home hubs map highlights a hub from the list and opens it from the map", a
 
 test("the HQ dot opens Copenhagen, not Malmö drawn beside it", async ({ page, isMobile }) => {
   test.skip(isMobile, "needs a pointer");
+  // The 2D map, as reduced-motion visitors, phones and low-core machines get it;
+  // on desktop it is otherwise covered by the 3D map once that loads.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const map = page.locator("[data-hubs-map]");
   await map.scrollIntoViewIfNeeded();
@@ -203,6 +210,9 @@ test("the HQ dot opens Copenhagen, not Malmö drawn beside it", async ({ page, i
 
 test("a hub focused from the keyboard stays lit when the pointer passes", async ({ page, isMobile }) => {
   test.skip(isMobile, "needs a pointer");
+  // The 2D map, as reduced-motion visitors, phones and low-core machines get it;
+  // on desktop it is otherwise covered by the 3D map once that loads.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const map = page.locator("[data-hubs-map]");
   await map.locator('a[data-hub="athens"]').focus();
@@ -214,15 +224,67 @@ test("a hub focused from the keyboard stays lit when the pointer passes", async 
   await expect(dot).toHaveAttribute("data-active", "true");
 });
 
+test("a hub focused before the page's script runs is lit once it does", async ({ page, isMobile }) => {
+  test.skip(isMobile, "keyboard focus on desktop");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.route("**/_next/static/chunks/*.js", async (route) => {
+    await new Promise((r) => setTimeout(r, 1500));
+    await route.continue();
+  });
+  await page.goto("/careers", { waitUntil: "domcontentloaded" });
+  const map = page.locator("[data-hubs-map]");
+  await map.locator('a[data-hub="athens"]').focus();
+  await expect(map.locator('svg g[data-hub="athens"]').first()).toHaveAttribute("data-active", "true", { timeout: 15_000 });
+});
+
 test("hubs map stays out of the keyboard order", async ({ page }) => {
   await page.goto("/careers");
   await expect(page.locator("[data-hubs-map] svg [tabindex], [data-hubs-map] svg a")).toHaveCount(0);
 });
 
-test("only the Locations map loads 3D", async ({ page, isMobile }) => {
+for (const path of ["/", "/careers"]) {
+  test(`${path} hubs map upgrades to 3D on desktop`, async ({ page, isMobile }) => {
+    test.skip(isMobile, "desktop only");
+    await page.goto(path);
+    const map = page.locator("[data-hubs-map]");
+    await map.scrollIntoViewIfNeeded();
+    await expect(map.locator("[data-map-mode]")).toHaveAttribute("data-map-mode", "3d", { timeout: 15_000 });
+    await expect(map.locator("canvas")).toHaveCount(1);
+  });
+}
+
+test("hubs map falls back to the 2D map when WebGL fails to start", async ({ page, isMobile }) => {
+  test.skip(isMobile, "desktop only");
+  // The capability check gets a WebGL context; three.js then gets none, as on
+  // a machine whose GPU driver refuses it.
+  await page.addInitScript(() => {
+    const real = HTMLCanvasElement.prototype.getContext;
+    let calls = 0;
+    HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, type: string, ...rest: unknown[]) {
+      if (type.startsWith("webgl") && ++calls > 1) return null;
+      return (real as (...a: unknown[]) => unknown).call(this, type, ...rest);
+    } as typeof real;
+  });
+  await page.goto("/careers");
+  const map = page.locator("[data-hubs-map]");
+  await map.scrollIntoViewIfNeeded();
+  await expect(map.locator("[data-map-mode]")).toHaveAttribute("data-map-mode", "svg-fallback", { timeout: 15_000 });
+  await expect(map.locator("canvas")).toHaveCount(0);
+  await expect(map.locator("svg").first()).toBeVisible();
+  await map.locator('a[data-hub="cairo"]').hover();
+  await expect(map.locator('svg g[data-hub="cairo"]').first()).toHaveAttribute("data-active", "true");
+});
+
+test("hubs map falls back to the 2D map when the WebGL context is lost", async ({ page, isMobile }) => {
   test.skip(isMobile, "desktop only");
   await page.goto("/careers");
-  await page.locator("[data-hubs-map]").scrollIntoViewIfNeeded();
-  await page.waitForTimeout(2000);
-  await expect(page.locator("[data-hubs-map] canvas")).toHaveCount(0);
+  const map = page.locator("[data-hubs-map]");
+  await map.scrollIntoViewIfNeeded();
+  await expect(map.locator("[data-map-mode]")).toHaveAttribute("data-map-mode", "3d", { timeout: 15_000 });
+  await map.locator("canvas").evaluate((c: HTMLCanvasElement) =>
+    (c.getContext("webgl2") ?? c.getContext("webgl"))?.getExtension("WEBGL_lose_context")?.loseContext(),
+  );
+  await expect(map.locator("[data-map-mode]")).toHaveAttribute("data-map-mode", "svg-fallback");
+  await expect(map.locator("canvas")).toHaveCount(0);
+  await expect(map.locator("svg").first()).toBeVisible();
 });

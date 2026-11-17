@@ -36,6 +36,10 @@ export function HubsMapInteractive({ className, children }: { className?: string
       const slug = hubOf(e);
       if (slug) router.push(`/locations/${slug}`);
     };
+    // Focus or the pointer may have reached a hub before this ran (while the
+    // page was still loading); pick that up instead of waiting for the next event.
+    const hovered = [...el.querySelectorAll(":hover")].reverse().find((n) => n.matches("[data-hub]"));
+    setActive(hubAt(hovered ?? null) ?? focused());
     el.addEventListener("pointerover", pick);
     el.addEventListener("focusin", pick);
     el.addEventListener("pointerleave", clear);
