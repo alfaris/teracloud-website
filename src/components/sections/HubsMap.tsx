@@ -70,6 +70,8 @@ export async function HubsMap({ interactive = false }: { interactive?: boolean }
     const [col, row] = toDot(o.coords);
     return { slug: o.slug, label: o === hq ? `${o.city} · HQ` : o.city, col, row, hq: o === hq };
   });
+  const groups = labelGroups(offices);
+  const sharesDot = new Set(groups.flatMap((g) => g.slice(1).map((o) => o.slug)));
   const wrap = (svg: React.ReactNode) => (interactive ? <HubsMapStage hubs={hubs}>{svg}</HubsMapStage> : svg);
   return (
     <HubsMapInteractive className="group/map grid items-center gap-12 lg:grid-cols-12">
@@ -107,10 +109,14 @@ export async function HubsMap({ interactive = false }: { interactive?: boolean }
           {offices.map((o) => {
             const [x, y] = project(o.coords);
             const isHq = o === hq;
+            // A hub drawn on top of another (Malmö on Copenhagen) would steal
+            // its clicks, so only the first of each group takes the pointer.
+            // The others are reached through their label line and the list.
+            const shadowed = sharesDot.has(o.slug);
             return (
-              <g key={o.slug} data-hub={o.slug} className="group/hub cursor-pointer">
+              <g key={o.slug} data-hub={o.slug} className={shadowed ? "group/hub pointer-events-none" : "group/hub cursor-pointer"}>
                 {/* Invisible, larger target so the small dot is easy to point at. */}
-                <circle cx={x} cy={y} r={18} fill="transparent" />
+                {!shadowed && <circle cx={x} cy={y} r={18} fill="transparent" />}
                 <circle
                   cx={x}
                   cy={y}
@@ -123,7 +129,7 @@ export async function HubsMap({ interactive = false }: { interactive?: boolean }
           })}
           {/* Too small to read on phones; the list carries the same content. */}
           <g className="max-sm:hidden">
-            {labelGroups(offices).map((g) => {
+            {groups.map((g) => {
               const lead = g[0];
               const isHq = g.includes(hq);
               const { dx, dy, end } = LABEL[lead.slug] ?? DEFAULT_LABEL;

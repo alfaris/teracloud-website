@@ -192,6 +192,15 @@ test("home hubs map highlights a hub from the list and opens it from the map", a
   await expect(page).toHaveURL(/\/locations\/perth$/);
 });
 
+test("the HQ dot opens Copenhagen, not Malmö drawn beside it", async ({ page, isMobile }) => {
+  test.skip(isMobile, "needs a pointer");
+  await page.goto("/");
+  const map = page.locator("[data-hubs-map]");
+  await map.scrollIntoViewIfNeeded();
+  await map.locator('svg g[data-hub="copenhagen"] circle').last().click();
+  await expect(page).toHaveURL(/\/locations\/copenhagen$/);
+});
+
 test("a hub focused from the keyboard stays lit when the pointer passes", async ({ page, isMobile }) => {
   test.skip(isMobile, "needs a pointer");
   await page.goto("/");
