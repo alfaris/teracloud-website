@@ -4,10 +4,13 @@ import { getOffices } from "@/lib/content";
 import { LAND_DOTS, MAP_COLS, MAP_ROWS } from "./world-dots";
 import { toDot } from "./map-projection";
 import { HubsMapStage } from "./HubsMapStage";
+import { HubsMapInteractive } from "./HubsMapInteractive";
 
 // The brand world map (dot-matrix land, leader-line labels with coordinates)
-// with arcs from HQ, the first office in site order. Decorative; the list
-// beside it is the content.
+// with arcs from HQ, the first office in site order. Pointing at a hub on the
+// map or in the list highlights its dot, route and label, and clicking it on
+// the map opens its page (HubsMapInteractive). The SVG is aria-hidden; the
+// list beside it is the content, and the way in for keyboards and screen readers.
 const U = 8; // SVG units per dot
 const W = MAP_COLS * U;
 const H = MAP_ROWS * U;
@@ -34,6 +37,9 @@ const LABEL: Record<string, { dx: number; dy: number; end?: boolean }> = {
 };
 const DEFAULT_LABEL = { dx: 6, dy: -4 };
 
+// Highlight transitions for the hub dots, routes and labels.
+const FADE = "transition-[opacity,stroke-opacity,stroke-width,scale] duration-300";
+
 const fmt = ([lat, lng]: [number, number]) =>
   `${Math.abs(lat).toFixed(1)}° ${lat >= 0 ? "N" : "S"} ${Math.abs(lng).toFixed(1)}° ${lng >= 0 ? "E" : "W"}`;
 
@@ -55,7 +61,7 @@ function labelGroups(offices: Office[]) {
 }
 
 // `interactive` (the Locations page) upgrades the map to three.js where the
-// device can handle it.
+// device can handle it. Every map responds to hover either way.
 export async function HubsMap({ interactive = false }: { interactive?: boolean } = {}) {
   const offices = await getOffices();
   const hq = offices[0];
@@ -64,9 +70,11 @@ export async function HubsMap({ interactive = false }: { interactive?: boolean }
     const [col, row] = toDot(o.coords);
     return { slug: o.slug, label: o === hq ? `${o.city} · HQ` : o.city, col, row, hq: o === hq };
   });
+  const groups = labelGroups(offices);
+  const sharesDot = new Set(groups.flatMap((g) => g.slice(1).map((o) => o.slug)));
   const wrap = (svg: React.ReactNode) => (interactive ? <HubsMapStage hubs={hubs}>{svg}</HubsMapStage> : svg);
   return (
-    <div data-hubs-map className="grid items-center gap-12 lg:grid-cols-12">
+    <HubsMapInteractive className="group/map grid items-center gap-12 lg:grid-cols-12">
       <div className="relative lg:col-span-8">
         {wrap(
         <svg viewBox={`0 ${-PAD_TOP} ${W} ${H + PAD_TOP}`} className="h-auto w-full" aria-hidden>
@@ -79,12 +87,19 @@ export async function HubsMap({ interactive = false }: { interactive?: boolean }
             strokeLinecap="round"
             strokeDasharray="0 1"
           />
-          <g fill="none" stroke="#8f8ff0" strokeOpacity="0.35" strokeWidth="1.5">
+          <g fill="none" stroke="#8f8ff0" strokeWidth="1.5">
             {offices.slice(1).map((o) => {
               const [x, y] = project(o.coords);
               const mx = (hx + x) / 2;
               const my = Math.min(hy, y) - Math.abs(x - hx) * 0.25 - 10;
-              return <path key={o.slug} d={`M ${hx} ${hy} Q ${mx} ${my} ${x} ${y}`} />;
+              return (
+                <path
+                  key={o.slug}
+                  data-hub={o.slug}
+                  d={`M ${hx} ${hy} Q ${mx} ${my} ${x} ${y}`}
+                  className={`${FADE} [stroke-opacity:0.35] group-data-[hovering=true]/map:[stroke-opacity:0.15] data-[active=true]:![stroke-opacity:1] data-[active=true]:[stroke-width:2.5]`}
+                />
+              );
             })}
           </g>
           <circle cx={hx} cy={hy} r="12" fill="none" stroke="#8f8ff0" strokeWidth="1.5">
@@ -94,11 +109,27 @@ export async function HubsMap({ interactive = false }: { interactive?: boolean }
           {offices.map((o) => {
             const [x, y] = project(o.coords);
             const isHq = o === hq;
-            return <circle key={o.slug} cx={x} cy={y} r={isHq ? 7 : 5} fill={isHq ? "#ffffff" : "#8f8ff0"} />;
+            // A hub drawn on top of another (Malmö on Copenhagen) would steal
+            // its clicks, so only the first of each group takes the pointer.
+            // The others are reached through their label line and the list.
+            const shadowed = sharesDot.has(o.slug);
+            return (
+              <g key={o.slug} data-hub={o.slug} className={shadowed ? "group/hub pointer-events-none" : "group/hub cursor-pointer"}>
+                {/* Invisible, larger target so the small dot is easy to point at. */}
+                {!shadowed && <circle cx={x} cy={y} r={18} fill="transparent" />}
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={isHq ? 7 : 5}
+                  fill={isHq ? "#ffffff" : "#8f8ff0"}
+                  className={`${FADE} origin-center [transform-box:fill-box] group-data-[hovering=true]/map:opacity-50 group-data-[active=true]/hub:!opacity-100 group-data-[active=true]/hub:scale-[1.6]`}
+                />
+              </g>
+            );
           })}
           {/* Too small to read on phones; the list carries the same content. */}
           <g className="max-sm:hidden">
-            {labelGroups(offices).map((g) => {
+            {groups.map((g) => {
               const lead = g[0];
               const isHq = g.includes(hq);
               const { dx, dy, end } = LABEL[lead.slug] ?? DEFAULT_LABEL;
@@ -111,11 +142,16 @@ export async function HubsMap({ interactive = false }: { interactive?: boolean }
               const top = dy < 0 ? ay - height : ay;
               const anchor = end ? "end" : "start";
               return (
-                <g key={lead.slug}>
-                  <line x1={x} y1={y} x2={ax} y2={ay} stroke="#8f8ff0" strokeOpacity="0.7" strokeWidth="1.5" />
+                <g
+                  key={lead.slug}
+                  data-hub={lead.slug}
+                  data-hubs={g.map((o) => o.slug).join(" ")}
+                  className={`${FADE} cursor-pointer group-data-[hovering=true]/map:opacity-40 data-[active=true]:!opacity-100`}
+                >
+                  <line x1={x} y1={y} x2={ax} y2={ay} className="pointer-events-none" stroke="#8f8ff0" strokeOpacity="0.7" strokeWidth="1.5" />
                   <text textAnchor={anchor} fill="rgb(255 255 255 / 0.9)" fontSize={CITY} fontWeight="600">
                     {lines.map((l, i) => (
-                      <tspan key={l} x={ax} y={top + CITY + i * LINE}>{l}</tspan>
+                      <tspan key={l} data-hub={g[i].slug} x={ax} y={top + CITY + i * LINE}>{l}</tspan>
                     ))}
                   </text>
                   <text
@@ -146,6 +182,6 @@ export async function HubsMap({ interactive = false }: { interactive?: boolean }
           </li>
         ))}
       </ul>
-    </div>
+    </HubsMapInteractive>
   );
 }
