@@ -112,7 +112,7 @@ export default async function Home() {
         intro="Teams in Europe, the US, MENA and Australia — close to our partners and to the talent we hire."
         tone="dark"
       >
-        <HubsMap />
+        <HubsMap interactive />
       </Section>
 
       <Section label="Careers" title="Hard problems, good people, real growth.">

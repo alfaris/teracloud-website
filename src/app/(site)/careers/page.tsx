@@ -92,7 +92,7 @@ export default async function CareersPage() {
       )}
 
       <Section tone="dark" label="Where you could work" title="Eight hubs to choose from.">
-        <HubsMap />
+        <HubsMap interactive />
       </Section>
     </>
   );

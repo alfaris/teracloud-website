@@ -291,12 +291,15 @@ export default function HubsMap3D({
   onHover,
   onSelect,
   onReady,
+  onFail,
 }: {
   hubs: Hub3D[];
   active: string | null;
   onHover: (slug: string | null) => void;
   onSelect: (slug: string) => void;
   onReady: () => void;
+  /** The WebGL context was lost; the SVG map takes over again. */
+  onFail: () => void;
 }) {
   const wrapper = useRef<HTMLDivElement>(null);
   const shared = useRef<Shared>({ pointer: new THREE.Vector2(), active: null, labels: new Map() });
@@ -328,7 +331,8 @@ export default function HubsMap3D({
         dpr={[1, 1.5]}
         camera={{ fov: 30, near: 0.1, far: 100, position: [0, 0, 30] }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        onCreated={({ setFrameloop }) => {
+        onCreated={({ gl, setFrameloop }) => {
+          gl.domElement.addEventListener("webglcontextlost", () => onFail(), { once: true });
           // Stop rendering while the map is off-screen.
           const io = new IntersectionObserver(([entry]) => setFrameloop(entry.isIntersecting ? "always" : "never"));
           if (wrapper.current) io.observe(wrapper.current);
