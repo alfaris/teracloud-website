@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { pageMetadata } from "@/lib/seo";
 
@@ -24,7 +25,7 @@ export default function CookiesPage() {
           <h2>Third-party sites</h2>
           <p>
             When you follow a link to our job board, sister companies or whistleblower hotline, those sites have their own
-            cookie policies. See our <a href="/privacy">privacy policy</a> for more.
+            cookie policies. See our <Link href="/privacy">privacy policy</Link> for more.
           </p>
         </article>
       </div>

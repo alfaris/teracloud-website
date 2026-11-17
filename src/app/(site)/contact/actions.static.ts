@@ -15,6 +15,8 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
   const { intent, name, email, company, message } = result.data;
   const subject = `[${intent}] ${name}${company ? ` — ${company}` : ""}`;
   const body = `${message}\n\n—\n${name}\n${email}${company ? `\n${company}` : ""}`;
-  window.location.href = `mailto:${siteSettings.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  return { status: "success", via: "mailto" };
+  const to = siteSettings.email;
+  const href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = href;
+  return { status: "success", via: "mailto", email: { to, subject, body, href } };
 }

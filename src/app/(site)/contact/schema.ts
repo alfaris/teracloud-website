@@ -8,6 +8,8 @@ export type ContactState = {
   errors?: Record<string, string>;
   /** "mailto": the message was handed to the visitor's email app, not sent. */
   via?: "server" | "mailto";
+  /** With via "mailto": the composed email, shown so it can be copied if no email app opened. */
+  email?: { to: string; subject: string; body: string; href: string };
 };
 
 export const contactSchema = z.object({
