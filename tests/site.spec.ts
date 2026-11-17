@@ -224,6 +224,19 @@ test("a hub focused from the keyboard stays lit when the pointer passes", async 
   await expect(dot).toHaveAttribute("data-active", "true");
 });
 
+test("a hub focused before the page's script runs is lit once it does", async ({ page, isMobile }) => {
+  test.skip(isMobile, "keyboard focus on desktop");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.route("**/_next/static/chunks/*.js", async (route) => {
+    await new Promise((r) => setTimeout(r, 1500));
+    await route.continue();
+  });
+  await page.goto("/careers", { waitUntil: "domcontentloaded" });
+  const map = page.locator("[data-hubs-map]");
+  await map.locator('a[data-hub="athens"]').focus();
+  await expect(map.locator('svg g[data-hub="athens"]').first()).toHaveAttribute("data-active", "true", { timeout: 15_000 });
+});
+
 test("hubs map stays out of the keyboard order", async ({ page }) => {
   await page.goto("/careers");
   await expect(page.locator("[data-hubs-map] svg [tabindex], [data-hubs-map] svg a")).toHaveCount(0);
