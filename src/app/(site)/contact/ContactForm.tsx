@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import clsx from "clsx";
-import { submitContact, type ContactState } from "./actions";
+import { submitContact } from "./actions";
+import type { ContactState } from "./schema";
 import { track } from "@/components/layout/Analytics";
 
 const intents = [
@@ -48,8 +49,17 @@ export function ContactForm() {
   if (state.status === "success") {
     return (
       <div role="status" className="rounded-2xl bg-blue-50 p-8">
-        <p className="t-h3">Message sent.</p>
-        <p className="mt-3 text-gray">Thanks, {values.name.split(" ")[0] || "and welcome"}. We usually reply within two working days, to {values.email}.</p>
+        {state.via === "mailto" ? (
+          <>
+            <p className="t-h3">Your email is ready to send.</p>
+            <p className="mt-3 text-gray">We&apos;ve opened your message in your email app — press send there. If nothing opened, email us at <a href="mailto:info@teracloud.com" className="text-blue underline underline-offset-4">info@teracloud.com</a>.</p>
+          </>
+        ) : (
+          <>
+            <p className="t-h3">Message sent.</p>
+            <p className="mt-3 text-gray">Thanks, {values.name.split(" ")[0] || "and welcome"}. We usually reply within two working days, to {values.email}.</p>
+          </>
+        )}
       </div>
     );
   }

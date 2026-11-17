@@ -3,6 +3,13 @@ import { site } from "@/content/site";
 import { getCapabilities, getCaseStudies, getOffices } from "@/lib/content";
 import { getJobs } from "@/lib/jobs";
 
+// A static export (GitHub Pages) only prerenders route handlers that are marked
+// static, and Cache Components forbids `dynamic = "force-static"`; a single
+// empty param set marks it static instead.
+export async function generateStaticParams() {
+  return [{}];
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [jobs, capabilities, work, offices] = await Promise.all([getJobs(), getCapabilities(), getCaseStudies(), getOffices()]);
   const u = (p: string) => `${site.url}${p}`;
