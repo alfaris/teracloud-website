@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
+import { asset } from "@/lib/asset";
 
 const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 
@@ -70,7 +71,7 @@ function HeroPoster({ hidden }: { hidden: boolean }) {
       <div className="relative">
         <div className="absolute inset-[-30%] rounded-full bg-blue/40 blur-[90px]" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/Teracloud_logomark_blue.svg" alt="" width={262} height={291} className="relative h-56 w-auto opacity-90 sm:h-72" />
+        <img src={asset("/brand/Teracloud_logomark_blue.svg")} alt="" width={262} height={291} className="relative h-56 w-auto opacity-90 sm:h-72" />
       </div>
     </div>
   );

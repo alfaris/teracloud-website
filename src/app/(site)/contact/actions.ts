@@ -1,19 +1,8 @@
 "use server";
 
 import { headers } from "next/headers";
-import { z } from "zod";
 import { sendMail } from "@/lib/mail";
-
-export type ContactState = { status: "idle" | "success" | "error"; message?: string; errors?: Record<string, string> };
-
-const schema = z.object({
-  intent: z.enum(["partnership", "careers", "general"]),
-  name: z.string().trim().min(2, "Enter your name.").max(120),
-  email: z.email("Enter an email address like name@company.com."),
-  company: z.string().trim().max(160).optional(),
-  message: z.string().trim().min(10, "Add a few more words — at least 10 characters.").max(5000),
-  consent: z.literal("on", { message: "Tick the box to confirm you've read the privacy policy." }),
-});
+import { validateContact, type ContactState } from "./schema";
 
 // Best-effort per-instance rate limit; swap for a shared store in production.
 const hits = new Map<string, number[]>();
@@ -29,18 +18,14 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
   // Honeypot: real people never fill this hidden field.
   if (form.get("website")) return { status: "success" };
 
-  const parsed = schema.safeParse(Object.fromEntries(form));
-  if (!parsed.success) {
-    const errors: Record<string, string> = {};
-    for (const issue of parsed.error.issues) errors[String(issue.path[0])] ??= issue.message;
-    return { status: "error", message: `${Object.keys(errors).length === 1 ? "One field needs" : `${Object.keys(errors).length} fields need`} attention. Check the messages below each field.`, errors };
-  }
+  const valid = validateContact(form);
+  if (!valid.data) return valid.state;
 
   const h = await headers();
   const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
   if (limited(ip)) return { status: "error", message: "You've sent several messages in a few minutes. Wait a moment and try again, or email info@teracloud.com." };
 
-  const { intent, name, email, company, message } = parsed.data;
+  const { intent, name, email, company, message } = valid.data;
   // Optional per-intent inboxes, e.g. CONTACT_TO_PARTNERSHIP=sales@teracloud.com.
   const to = process.env[`CONTACT_TO_${intent.toUpperCase()}`] || process.env.CONTACT_TO || "info@teracloud.com";
   const from = process.env.CONTACT_FROM ?? "Teracloud website <website@teracloud.com>";

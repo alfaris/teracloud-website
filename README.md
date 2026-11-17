@@ -28,6 +28,7 @@ reject the lock file.
 | --- | --- |
 | `npm run dev` | Development server |
 | `npm run build` / `npm run serve` | Production build, then the standalone server (as deployed) |
+| `npm run build:pages` | Static copy for GitHub Pages in `out/` (see GitHub Pages below) |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
 | `npm test` | Playwright + axe against a production server on port 3020 (run `npm run build` first) |
 
@@ -113,6 +114,31 @@ sudo systemctl restart teracloud-web   # unit file: deploy/teracloud-web.service
 
 Then install `deploy/nginx.conf` (set the certificate paths) and point the
 `teracloud.com` and `www.teracloud.com` DNS records at the server.
+
+### GitHub Pages (static copy)
+
+`.github/workflows/pages.yml` publishes a static copy of the site to GitHub
+Pages on every push to `main`, once a day (to pick up new job listings) and on
+demand from the Actions tab. To turn it on, go to the repository's
+**Settings → Pages** and set **Source** to **GitHub Actions**. Publishing from
+a private repository needs a paid GitHub plan, and the published site is public.
+
+The copy is served at `https://<owner>.github.io/teracloud-website/` unless a
+custom domain is set in the same settings page. Because Pages only serves
+files, it differs from the server build:
+
+- **Contact form:** opens a pre-filled email in the visitor's email app instead
+  of sending it (`src/app/(site)/contact/actions.static.ts`).
+- **Jobs** are fetched when the site is built, not hourly.
+- **No redirects or security headers** (`next.config.ts`), and images are
+  served as they are, without resizing.
+
+To build it locally, run `PAGES_BASE_PATH=/teracloud-website npm run build:pages`
+(leave `PAGES_BASE_PATH` empty for a custom domain). The script temporarily
+removes the Cache Components directives, which a static export can't use, and
+restores the files afterwards. In code, link to files in `public/` with
+`next/link`, `next/image` or `asset()` from `src/lib/asset.ts`, so the
+sub-path is added.
 
 ### Configuration
 

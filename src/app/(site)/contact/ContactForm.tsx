@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import clsx from "clsx";
-import { submitContact, type ContactState } from "./actions";
+import { submitContact } from "./actions";
+import type { ContactState } from "./schema";
 import { track } from "@/components/layout/Analytics";
 
 const intents = [
@@ -45,7 +46,12 @@ export function ContactForm() {
     formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
   }, [state]);
 
-  if (state.status === "success") {
+  // The static (GitHub Pages) build hands the message to the visitor's email
+  // app instead of sending it. Keep the form filled in and show the composed
+  // email, so it can be copied into webmail if no email app opened.
+  const handedOff = state.status === "success" && state.via === "mailto" ? state.email : undefined;
+
+  if (state.status === "success" && !handedOff) {
     return (
       <div role="status" className="rounded-2xl bg-blue-50 p-8">
         <p className="t-h3">Message sent.</p>
@@ -127,6 +133,18 @@ export function ContactForm() {
         </label>
         {errorFor("consent")}
       </div>
+      {handedOff && (
+        <div role="status" className="rounded-2xl bg-blue-50 p-6">
+          <p className="font-semibold">Your email is ready to send.</p>
+          <p className="mt-2 text-gray">
+            We&apos;ve opened it in your email app — press send there. If nothing opened,{" "}
+            <a href={handedOff.href} className="text-blue underline underline-offset-4">try again</a>, or copy the text below into an email to{" "}
+            <a href={`mailto:${handedOff.to}`} className="text-blue underline underline-offset-4">{handedOff.to}</a>.
+          </p>
+          <label htmlFor={`${uid}-composed`} className="mt-4 block font-medium">Subject: {handedOff.subject}</label>
+          <textarea id={`${uid}-composed`} readOnly value={handedOff.body} rows={6} className={input} onFocus={(e) => e.currentTarget.select()} />
+        </div>
+      )}
       {state.status === "error" && state.message && (
         <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{state.message}</p>
       )}
