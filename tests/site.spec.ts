@@ -170,9 +170,31 @@ test("locations map upgrades to 3D on desktop, stays SVG on phones", async ({ pa
   } else {
     await expect(map.locator("canvas")).toHaveCount(1, { timeout: 10_000 });
     // Hovering a hub in the list highlights it.
-    await map.locator('[data-hub="athens"]').hover();
-    await expect(map.locator('[data-hub="athens"]')).toHaveAttribute("data-active", "true");
+    await map.locator('a[data-hub="athens"]').hover();
+    await expect(map.locator('a[data-hub="athens"]')).toHaveAttribute("data-active", "true");
   }
+});
+
+test("home hubs map highlights a hub from the list and opens it from the map", async ({ page, isMobile }) => {
+  test.skip(isMobile, "needs a pointer");
+  await page.goto("/");
+  const map = page.locator("[data-hubs-map]");
+  await map.scrollIntoViewIfNeeded();
+  // Pointing at a hub in the list lights its dot, route and label on the map.
+  await map.locator('a[data-hub="athens"]').hover();
+  await expect(map).toHaveAttribute("data-hovering", "true");
+  for (const part of ['svg g[data-hub="athens"]', 'svg path[data-hub="athens"]', 'svg [data-hubs~="athens"]']) {
+    await expect(map.locator(part).first()).toHaveAttribute("data-active", "true");
+  }
+  await expect(map.locator('svg g[data-hub="perth"]').first()).toHaveAttribute("data-active", "false");
+  // Clicking the hub on the map opens its page.
+  await map.locator('svg g[data-hub="perth"] circle').first().click({ force: true });
+  await expect(page).toHaveURL(/\/locations\/perth$/);
+});
+
+test("hubs map stays out of the keyboard order", async ({ page }) => {
+  await page.goto("/careers");
+  await expect(page.locator("[data-hubs-map] svg [tabindex], [data-hubs-map] svg a")).toHaveCount(0);
 });
 
 test("only the Locations map loads 3D", async ({ page, isMobile }) => {
