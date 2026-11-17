@@ -38,7 +38,7 @@ const LABEL: Record<string, { dx: number; dy: number; end?: boolean }> = {
 const DEFAULT_LABEL = { dx: 6, dy: -4 };
 
 // Highlight transitions for the hub dots, routes and labels.
-const FADE = "transition-[opacity,stroke-opacity,stroke-width,transform] duration-300";
+const FADE = "transition-[opacity,stroke-opacity,stroke-width,scale] duration-300";
 
 const fmt = ([lat, lng]: [number, number]) =>
   `${Math.abs(lat).toFixed(1)}° ${lat >= 0 ? "N" : "S"} ${Math.abs(lng).toFixed(1)}° ${lng >= 0 ? "E" : "W"}`;
@@ -142,7 +142,7 @@ export async function HubsMap({ interactive = false }: { interactive?: boolean }
                   data-hubs={g.map((o) => o.slug).join(" ")}
                   className={`${FADE} cursor-pointer group-data-[hovering=true]/map:opacity-40 data-[active=true]:!opacity-100`}
                 >
-                  <line x1={x} y1={y} x2={ax} y2={ay} stroke="#8f8ff0" strokeOpacity="0.7" strokeWidth="1.5" />
+                  <line x1={x} y1={y} x2={ax} y2={ay} className="pointer-events-none" stroke="#8f8ff0" strokeOpacity="0.7" strokeWidth="1.5" />
                   <text textAnchor={anchor} fill="rgb(255 255 255 / 0.9)" fontSize={CITY} fontWeight="600">
                     {lines.map((l, i) => (
                       <tspan key={l} data-hub={g[i].slug} x={ax} y={top + CITY + i * LINE}>{l}</tspan>

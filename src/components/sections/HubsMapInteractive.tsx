@@ -22,9 +22,14 @@ export function HubsMapInteractive({ className, children }: { className?: string
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    const hubOf = (e: Event) => (e.target as Element).closest<HTMLElement | SVGElement>("[data-hub]")?.dataset.hub ?? null;
-    const pick = (e: Event) => setActive(hubOf(e));
-    const clear = () => setActive(null);
+    const hubAt = (node: EventTarget | Element | null) =>
+      node instanceof Element ? (node.closest<HTMLElement | SVGElement>("[data-hub]")?.dataset.hub ?? null) : null;
+    const hubOf = (e: Event) => hubAt(e.target);
+    // A hub focused from the keyboard stays lit while the pointer wanders.
+    const focused = () => (el.contains(document.activeElement) ? hubAt(document.activeElement) : null);
+    const pick = (e: Event) => setActive(hubOf(e) ?? focused());
+    const clear = () => setActive(focused());
+    const blur = (e: FocusEvent) => setActive(el.contains(e.relatedTarget as Node | null) ? hubAt(e.relatedTarget) : null);
     const open = (e: MouseEvent) => {
       const target = e.target as Element;
       if (!target.closest("svg")) return; // list entries are links already
@@ -34,13 +39,13 @@ export function HubsMapInteractive({ className, children }: { className?: string
     el.addEventListener("pointerover", pick);
     el.addEventListener("focusin", pick);
     el.addEventListener("pointerleave", clear);
-    el.addEventListener("focusout", clear);
+    el.addEventListener("focusout", blur);
     el.addEventListener("click", open);
     return () => {
       el.removeEventListener("pointerover", pick);
       el.removeEventListener("focusin", pick);
       el.removeEventListener("pointerleave", clear);
-      el.removeEventListener("focusout", clear);
+      el.removeEventListener("focusout", blur);
       el.removeEventListener("click", open);
     };
   }, [router]);

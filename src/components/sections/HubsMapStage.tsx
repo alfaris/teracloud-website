@@ -56,7 +56,7 @@ export function HubsMapStage({ hubs, children }: { hubs: Hub3D[]; children: Reac
     <div className="relative">
       <div className={clsx("transition-opacity duration-700", ready && "opacity-0")}>{children}</div>
       {enabled && (
-        <div className={clsx("absolute inset-0 transition-opacity duration-700", ready ? "opacity-100" : "opacity-0")}>
+        <div className={clsx("absolute inset-0 transition-opacity duration-700", ready ? "opacity-100" : "pointer-events-none opacity-0")}>
           <HubsMap3D
             hubs={hubs}
             active={active}

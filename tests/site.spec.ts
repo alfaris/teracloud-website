@@ -188,8 +188,21 @@ test("home hubs map highlights a hub from the list and opens it from the map", a
   }
   await expect(map.locator('svg g[data-hub="perth"]').first()).toHaveAttribute("data-active", "false");
   // Clicking the hub on the map opens its page.
-  await map.locator('svg g[data-hub="perth"] circle').first().click({ force: true });
+  await map.locator('svg g[data-hub="perth"] circle').last().click();
   await expect(page).toHaveURL(/\/locations\/perth$/);
+});
+
+test("a hub focused from the keyboard stays lit when the pointer passes", async ({ page, isMobile }) => {
+  test.skip(isMobile, "needs a pointer");
+  await page.goto("/");
+  const map = page.locator("[data-hubs-map]");
+  await map.locator('a[data-hub="athens"]').focus();
+  const dot = map.locator('svg g[data-hub="athens"]').first();
+  await expect(dot).toHaveAttribute("data-active", "true");
+  const box = (await map.locator("svg").first().boundingBox())!;
+  await page.mouse.move(box.x + 5, box.y + box.height - 5);
+  await page.mouse.move(0, 0);
+  await expect(dot).toHaveAttribute("data-active", "true");
 });
 
 test("hubs map stays out of the keyboard order", async ({ page }) => {
